@@ -1,6 +1,9 @@
 Win32 API cheatsheet
 
-Switching between Unix and Windows is hard... especially when your a lifelong Unix guy. I forget the Windows API calls about 5 minutes after I learn them... so here's a cheat sheet of useful API calls, much of this data is pulled from the book "Windows System Programming, Fourth Edition". It a good read if your new (or don't often use) Windows.
+Switching between Unix and Windows is hard... especially when your a lifelong Unix guy.
+I forget the Windows API calls about 5 minutes after I learn them...
+So here's a cheat sheet of useful API calls, much of this data is pulled from the book "Windows System Programming, Fourth Edition".
+It a good read if your new (or don't often use) Windows.
 
 File related Functions
 Function	                        Purpose

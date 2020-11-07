@@ -1,0 +1,40 @@
+                                                                   How CPU Works
+- Execute "a sequence of stored-instructions" <=> "a program"
+- Instructions to be executed are kept in "Computer Memory" (Let's call it Virtual Memory - VMem)
+* Nearly/Almost all CPUs follow the "Instruction-cycle":
+
+      1, Fetch
+  # Retrieving an Instruction from VMem. The Instruction's location (address) in Program Memory (VMem) is determined by the "Program Counter" (Instruction Pointer)
+  => "Program Counter" == <eip> or <iar> (Instruction Address Register), stores an address of the next instruction to be fetched
+          Example of Processor Access Order:
+          0x080484ae      mov dword [eax], 0x47414c46
+          0x080484b4      mov dword [eax + 4], 0x3930342d
+          0x47414c46 = GALF in VMem
+          0x3930342d = 904- in VMem
+  https://en.wikipedia.org/wiki/Endianness: "The Intel x86 and AMD64 / x86-64 series of processors use the little-endian format"
+  So... When fetching bytes from Register to VMem
+    => Processor stores data in reverse-byte sequence.
+      => When the Processor gets the "numeric data" (hexadecimal data format, like "47414c46" or "3930342d") from VMem to Register, it again reverses the bytes
+        => 0x47414c46 = FLAG in Register
+        => 0x3930342d = -409 in Register
+  # After an instruction is fetched, the PC is incremented by the length of the instruction so that it will contain the address of the next instruction in the sequence
+  # Often, the instruction to be fetched must be retrieved from relatively slow memory, causing the CPU to stall while waiting for the instruction to be returned
+  => This issue is largely addressed in modern processors by caches and pipeline architectures
+
+      2, Decode
+  # The Instruction was fetched from VMem by CPU determines what will CPU do.
+
+      3, Execute
+  # After the fetch and decode steps, the execute step is performed.
+  # Depending on the CPU architecture, this may consist of a single action or a sequence of actions
+
+-------------------------------------------------------------------------------##--------------------------------------------------------------------------------
+
+                                                                    Basic Syntax
+*** Sections:
+  1, DATA:
+  - Declaring initialized data or constants.
+  - This data does not change at runtime.
+  - We can declare values, file names, or buffer size, etc.
+  Syntax:
+section.data

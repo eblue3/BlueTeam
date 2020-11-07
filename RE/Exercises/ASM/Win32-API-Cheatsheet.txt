@@ -1,0 +1,74 @@
+Win32 API cheatsheet
+
+Switching between Unix and Windows is hard... especially when your a lifelong Unix guy. I forget the Windows API calls about 5 minutes after I learn them... so here's a cheat sheet of useful API calls, much of this data is pulled from the book "Windows System Programming, Fourth Edition". It a good read if your new (or don't often use) Windows.
+
+File related Functions
+Function	                        Purpose
+CreateFile                        Create a File Object
+ReadFile                          Read a File Object
+WriteFile                         Write a File Object
+CloseHandle                       Close a Handle (of which a file is)
+
+Console Related functions (note GUI apps don't have a console by default)(40)
+GetStdHandle                      Gets a handle to STD_{INPUT|OUTPUT|ERROR}_HANDLE
+SetStdHandle                      Sets STD_{INPUT|OUTPUT|ERROR}_HANDLE to a handle
+SetConsoleMode                    Change Console Settings
+ReadConsole                       Read from Console
+WriteConsole                      Write to Console
+FreeConsole                       Detach a process from it's console
+AllocConsole                      Create a new console for a process if it doesn't already have one
+
+File and Directory Functions(46)
+DeleteFile                        Deletes a file
+CopyFile                          Copy a file
+CreateHardLink                    Create a hard link
+CreateSymbolicLink                Create a symbolic link
+MoveFile[Ex]                      Rename a file or directory
+CreateDirectory                   Create a Directory
+RemoveDirectory	                  Remove a Directory
+SetCurrentDirectory	              Change the current Directory
+GetCurrentDirectory	              Get the current Directory
+FindFirstFile	                    File Searching... similar to Unix opendir
+FindNextFile	                    File Searching... similar to Unix readdir
+FindClose	                        Close search handle... similar to Unix closedir
+GetFileInformationByHandle	      GetInformation about a file (like Unix stat)
+GetFileTime	                      Get time information about a file (like Unix stat)
+FileTimeToSystemTime
+SystemTimeToFileTime
+CompareFileTime
+SetFileTime
+FileTimeToLocalFileTime
+LocalFileTimeToFileTime
+GetFileType	                      Tells what type of file something is (char, pipe etc)
+GetFileAttributes	                Directory, Normal File, Read Only, Temporary
+SetFileAttributes	                Directory, Normal File, Read Only, Temporary
+GetTimeFileName	                  Creates a name for temp files
+GetFullPathName	                  Get the path name
+GetShortPathName	                Get the path name
+SetFileShortName	                Change the existing filename
+
+File Pointers(61)
+SetFilePointer[Ex]                Changes the file pointer for Random Access
+GetFileSize[Ex]	                  Get the file size
+SetEndOfFile[Ex]	                Truncate or Grow files
+
+File Locking(61)
+LockFileEx	                      File locking
+UnlockFileEx	                    File locking
+Registry                          Functions (86)
+RegOpenKey[Ex]	                  Registry Handle for accesing registry
+RegEnumKey[Ex]	                  Like Unix opendir... for registry keys
+RegCreateKey[Ex]	                Create a registry key
+RegEnumValue[Ex]	                Get registry value information/TD>
+RegSetValue[Ex]	                  Set a registry value
+RegDeleteValue	                  Set a registry value
+
+Random Information:
+
+GetLastError
+
+Strings - "This string" (ASCII 8 bit)
+Strings - L"This string" (Unicode 16 bit)
+Strings - _T("This string") (Macro to dynamically define TCHAR to ASCII (CHAR) or UNICODE (WCHAR) based on whether UNICODE and _UNICODE are defined or not)
+
+_tmain() -> goes to main() or wmain() depending on [_]UNICODE defines

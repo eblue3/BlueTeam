@@ -12,11 +12,14 @@
           0x47414c46 = GALF in VMem
           0x3930342d = 904- in VMem
   https://en.wikipedia.org/wiki/Endianness: "The Intel x86 and AMD64 / x86-64 series of processors use the little-endian format"
+  Ref: https://cnx.org/contents/Y9Ps2snV@1/CPU-Structure-And-Functions
   So... When fetching bytes from Register to VMem
     => Processor stores data in reverse-byte sequence.
       => When the Processor gets the "numeric data" (hexadecimal data format, like "47414c46" or "3930342d") from VMem to Register, it again reverses the bytes
         => 0x47414c46 = FLAG in Register
         => 0x3930342d = -409 in Register
+  => It only happens if we move data into register or store it in VMem. It won't be reversed if we us "db/dd/..." to define the data.
+  Example:   msg: db  'Hello, World!'
   # After an instruction is fetched, the PC is incremented by the length of the instruction so that it will contain the address of the next instruction in the sequence
   # Often, the instruction to be fetched must be retrieved from relatively slow memory, causing the CPU to stall while waiting for the instruction to be returned
   => This issue is largely addressed in modern processors by caches and pipeline architectures
@@ -28,7 +31,7 @@
   # After the fetch and decode steps, the execute step is performed.
   # Depending on the CPU architecture, this may consist of a single action or a sequence of actions
 
--------------------------------------------------------------------------------##--------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------- ## -----------------------------------------------------------------------------
 
                                                                     Basic Syntax
 *** Sections:
@@ -36,5 +39,24 @@
   - Declaring initialized data or constants.
   - This data does not change at runtime.
   - We can declare values, file names, or buffer size, etc.
-  Syntax:
+  Syntax & Example:
 section.data
+  message:  db  'Hello, world!', 0xA, 0   ; text message
+                                          ; 0xA (10) is hex for (NL = New Line), carriage return
+                                          ; 0 terminates the line
+
+  2, BSS (*Static memory *Section contains *Buffer for data to be declared):
+  - Declared Variable
+  Syntax & Example:
+section .bss
+  variable: resb 4      ; The symbol variable now refers to the address of 4 bytes of storage in the .bss section
+                        ; (i.e. enough to store a 32-bit value in).
+
+section .text
+  ...
+  mov eax, 123
+  mov [variable], eax   ; Sets the eax register to 123, and then stores the value of eax in the location addressed by the symbol variable.
+  mov eax, [variable]   ; Reads the value currently stored in the location addressed by variable into the eax register.
+  ...
+  mov eax, 456
+  mov [variable], eax   ; Stores a new value, overwriting the previous one.

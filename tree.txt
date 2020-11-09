@@ -3,17 +3,17 @@
 │   ├── [01;34mExercises[00m
 │   │   ├── [01;34mASM[00m
 │   │   └── [01;34mRes-Editor[00m
-│   ├── [01;34mMaterial[00m
-│   │   ├── A Helpful Guide [Part 1].pdf
-│   │   ├── A Helpful Guide [Part 2].pdf
-│   │   ├── [01;35mRegisters2.jpg[00m
-│   │   ├── Registers.PNG
-│   │   ├── RE-Roadmap.PNG
-│   │   ├── X86 Architecture.pdf
-│   │   ├── x86 Assembly Language Reference Manual - March 2020.pdf
-│   │   └── x86 Assembly Language Reference Manual - November 1995.pdf
-│   ├── LICENSE
-│   └── README.md
+│   └── [01;34mMaterial[00m
+│       ├── A Helpful Guide [Part 1].pdf
+│       ├── A Helpful Guide [Part 2].pdf
+│       ├── Assembly Tutorial.pdf
+│       ├── [01;35mRegisters2.jpg[00m
+│       ├── Registers.PNG
+│       ├── RE-Roadmap.PNG
+│       ├── x64 Cheatsheet.pdf
+│       ├── X86 Architecture.pdf
+│       ├── x86 Assembly Language Reference Manual - March 2020.pdf
+│       └── x86 Assembly Language Reference Manual - November 1995.pdf
 ├── LICENSE
 ├── README.md
 └── tree.txt

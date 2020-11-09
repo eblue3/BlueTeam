@@ -1,0 +1,57 @@
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+                                   Register                                                                        Register
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+                               x86 Architecture
+ The x86 architecture has 8 General-Purpose Registers (GPR), 6 Segment Registers, 1 Flags Register and an Instruction Pointer.
+ 64-bit x86 has additional registers.
+
+********************************************************************************
+             General-Purpose Registers (GPR) - 16-bit naming conventions
+ The 8 GPRs are:
+Data Registers:
+   1, *(AX) Accumulator register. Used in arithmetic operations
+   2, *(CX) Counter register. Used in shift/rotate instructions and loops.
+   3, *(DX) Data register. Used in arithmetic operations and I/O operations.
+   4, *(BX) Base register. Used as a pointer to data (located in segment register DS, when in segmented mode).
+   5, *(SP) Stack Pointer register. Pointer to the top of the stack.
+   6, *(BP) stack Base Pointer register. Used to point to the base of the stack.
+Index Registers:
+   7, (SI) Source Index register. Used as a pointer to a source in stream operations.
+   8, (DI) Destination Index register. Used as a pointer to a destination in stream operations.
+
+(AX) => (CX) => (DX) => (BX) => (SP) => (BP) => (SI) => (DI): Same order that is used in a push-to-stack operation
+"R" = Register
+"E" = Extended
+A(C|D|B)X also be addressed as A(C|D|B)H & A(C|D|B)L
+
+64-bit mode:  [RAX]  [RCX]  [RDX]  [RBX]  [RSP]  [RBP]  [RSI]  [RDI]
+32-bit mode:  [EAX]  [ECX]  [EDX]  [EBX]  [ESP]  [EBP]  [ESI]  [EDI]
+16-bit mode:   [AX]   [CX]   [DX]   [BX]   [SP]   [BP]   [SI]   [DI]
+ 8-bit mode: [AH|L] [CH|L] [DH|L] [BH|L]  [SPL]  [BPL]  [SIL]  [DIL]
+
+********************************************************************************
+                             Segment Registers
+Segment Registers <=> Segmented Memory Registers
+ The 6 Segment Registers are:
+   1, (SS) Stack Segment.  Pointer to the stack.
+   2, (CS) Code Segment.   Pointer to the code.     <=> Starting Address of .text section
+   3, (DS) Data Segment.   Pointer to the data.     <=> Starting Address of .data & .bss section
+   4, (ES) Extra Segment.  Pointer to extra data ('E' stands for 'Extra').
+   5, (FS) F Segment.      Pointer to more extra data ('F' comes after 'E').
+   6, (GS) G Segment.      Pointer to still more extra data ('G' comes after 'F').
+
+   Most applications on most modern operating systems (like FreeBSD, Linux or Microsoft Windows)
+use a memory model that points nearly all segment registers to the same place (and uses paging instead), effectively disabling their use.
+  Typically the use of FS or GS is an exception to this rule, instead being used to point at thread-specific data.
+                             +++++++++++++++++
+                             Pointer Registers
+The pointer registers are 32-bit EIP, ESP, and EBP registers and corresponding 16-bit right portions IP, SP, and BP. There are three categories of pointer registers −
+    1, (R|EIP) Instruction Pointer  − The 16-bit IP register stores the offset address of the next instruction to be executed.
+    IP in association with the CS register (as CS:IP) gives the complete address of the current instruction in the code segment.
+    => Code Segment + Instruction Pointer = Exact Address of current instruction in Code Segment.
+    2, (R|ESP) Stack Pointer        − The 16-bit SP register provides the offset value within the program stack.
+    SP in association with the SS register (SS:SP) refers to be current position of data or address within the program stack.
+    => Stack Segment + Stack Pointer      = Exact Address of current position of data within the program Stack.
+    3, (R|EBP) Base Pointer         − The 16-bit BP register mainly helps in referencing the parameter variables passed to a subroutine.
+    The address in SS register is combined with the offset in BP to get the location of the parameter.
+    BP can also be combined with DI and SI as base register for special addressing.

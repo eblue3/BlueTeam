@@ -1,0 +1,77 @@
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+                                 Basic Syntax                                                                    Basic Syntax
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+*** Sections
+ *** Define an area in Memory that stores the data/code/...
+ 1, DATA:
+ - Declaring initialized data or constants.
+ - This data does not change at runtime.
+ - We can declare values, file names, or buffer size, etc.
+ Syntax & Example:
+section.data
+ message:  db  'Hello, world!', 0xA, 0   ; text message
+                                         ; 0xA (10) is hex for (NL = New Line), carriage return
+                                         ; 0 terminates the line
+--- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+.DATA
+ var    DB 64             ; Declare a byte, referred to as location var, containing the value 64.
+ var2   DB ? 	            ; Declare an uninitialized byte, referred to as location var2.
+        DB 10             ; Declare a byte with no label, containing the value 10. Its location is var2 + 1.
+ X      DW ?              ; Declare a 2-byte uninitialized value, referred to as location X.
+ Y      DD 30000          ; Declare a 4-byte value, referred to as location Y, initialized to 30000.
+ Z 	    DD 1, 2, 3 	      ; Declare three 4-byte values, initialized to 1, 2, and 3. The value of location Z + 8 will be 3.
+ bytes  DB 10 DUP(?) 	    ; Declare 10 uninitialized bytes starting at location bytes.
+ arr 	  DD 100 DUP(0)     ; Declare 100 4-byte words starting at location arr, all initialized to 0
+ str 	  DB 'hello',0 	    ; Declare 6 bytes starting at the address str, initialized to the ASCII character values for hello and the null (0) byte.
+=>
+DB: Define Byte
+DW: Define Word         (2 bytes)
+DD: Define Doubleword   (4 bytes)
+DQ: Define Quadword     (8 bytes)
+DT: Define Tenbytes     (10 bytes)
+D   : Define
+RES : Reserve
+--- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+
+ 2, BSS (Block Starting Symbol - Static memory section contains buffer for data to be declared):
+ - Declared Variable.
+ - Only declare HOW MUCH BYTES the Variable uses. Actual data is declared on .data section.
+ Syntax & Example:
+section .bss
+ variable: resb 4      ; The symbol variable now refers to the address of 4 bytes of storage in the .bss section
+                       ; (i.e. enough to store a 32-bit value in).
+ ...
+section .text
+ ...
+ mov eax, 123
+ mov [variable], eax   ; Sets the eax register to 123, and then stores the value of eax in the location addressed by the symbol variable.
+ mov eax, [variable]   ; Reads the value currently stored in the location addressed by variable into the eax register.
+ ...
+ mov eax, 456
+ mov [variable], eax   ; Stores a new value, overwriting the previous one.
+
+ 3, CODE/TEXT
+ - Actual Code
+ - Begin with the declaration " global _start" (or _main) to tell kernel where the program execution begins.
+ Syntax & Example:
+section .text
+ global _start
+_start:
+ ...
+
+*** Segment
+ A segmented memory model divides the system memory into groups of independent segments referenced by pointers located in the segment registers.
+ Each segment is used to contain a specific type of data.
+ One segment is used to contain instruction codes, another segment stores the data elements, and a third segment keeps the program stack.
+ - Data Segment:
+   It is represented by .data section and the .bss.
+   The .data section is used to declare the memory region, where data elements are stored for the program.
+   => This section cannot be expanded after the data elements are declared, and it remains static throughout the program.
+   The .bss section is also a static memory section that contains buffers for data to be declared later in the program.
+   => This buffer memory is zero-filled.
+ - Code Segment:
+   It is represented by .text section.
+   This defines an area in memory that stores the instruction codes.
+   This is also a fixed area.
+ - Stack Segment:
+   This segment contains data values passed to functions and procedures within the program.

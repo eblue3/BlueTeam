@@ -1,0 +1,134 @@
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+                                 How CPU Works                                                                   How CPU Works
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+*** Memory & Storage
+ Data Memory = RAM.
+ Computer Memory = Most often is RAM or ROM. Called "Primary Storage".
+ Primary Storage = Computer Memory
+ Secondary Storage = External Storage (SSD/HDD/...)
+ Program memory typically refers to flash memory when it is used to hold the program (instructions).
+ - Execute "a sequence of stored-instructions" <=> "a program"
+ - Instructions to be executed are kept in "Computer Memory" (RAM/ROM)
+
+*** Instruction Register & CPU Units
+ - MAR = Memory Address register
+ - MDR = Memory Data register
+ - MBR = Memory Buffer register
+ - CIR = Current Instruction register
+ - CU  = Control Unit
+ - ALU = Arithmetic Logic Unit
+ - FPU = Floating Point Unit
+
+*** Nearly/Almost all CPUs follow the "Instruction-cycle":
+---------------------------------------------------
+| Computer Memory / Primary Storage / Main Memory |
+|                   RAM / ROM                     |   <= Source code is here
+---------------------------------------------------
+                       ||
+                       VV
+     --------------------------------------
+     |           START OF CYCLE           | <------------------<-----------------<----------------
+     --------------------------------------                                                      |
+                       ||                                                                        |
+                       VV                                                                        |
+     --------------------------------------------------------------------------                  |
+     |   Address in Program Counter (PC)  |                                   |                  ^
+     |           copied to MAR            | => Memory Addressing?             |                  |
+     --------------------------------------                                   |                  |
+     |                 ||                                                     |                  |
+     |                 VV                                                     |                  |
+     --------------------------------------                                   |                  |
+     |   Program Counter incremented to   |                                   |                  |
+     |   "point" to the next instruction  |                                   |                  |
+     --------------------------------------                                   |                  ^
+     |                 ||                                  FETCH              |                  |
+     |                 VV                                  STAGE              |                  |
+     --------------------------------------                                   |                  |
+     |   Instruction found at address     |                                   |                  |
+     |   described by MAR is copied to    | => Memory Hold Data (Flash?)      |                  |
+     |  the MDR (hold "data" for later)   | => So MDR is "Internal Memory"    |                  |
+     --------------------------------------                                   |                  |
+     |                 ||                                                     |                  |
+     |                 VV                                                     |                  |
+     --------------------------------------                                   |                  |
+     |    Instruction in MDR copied to    | => Ready to be decoded?           |                  ^
+     |               the CIR              |                                   |                  |
+     --------------------------------------------------------------------------                  |
+                       ||                                                                        |
+                       VV                                                                        |
+     --------------------------------------------------------------------------                  |
+     | CU decodes the contents of the CIR |             DECODE STAGE          |                  |
+     --------------------------------------------------------------------------                  |
+                       ||                                                                        ^
+                       VV                                                                        |
+     --------------------------------------------------------------------------                  |
+     |     CU sends signal to relevant    |               EXECUTE             |                  |
+     |        components (e.g: ALU)       |                STAGE              |                  |
+     --------------------------------------------------------------------------                  |
+                       ||                                                                        |
+                       VV                                                                        |
+     --------------------------------------                                                      |
+     |           END OF CYCLE             | ---------->--------------->-------------->------------
+     --------------------------------------
+
+     1, Fetch
+ # Retrieving an Instruction from RAM/ROM. The Instruction's location (address) in Program Memory (PMem) is determined by the "Program Counter" (Instruction Pointer)
+ => "Program Counter" == <eip> or <iar> (Instruction Address Register), stores an address of the next instruction to be fetched
+         Example of Processor Access Order:
+         0x080484ae      mov dword [eax], 0x47414c46
+         0x080484b4      mov dword [eax + 4], 0x3930342d
+         0x47414c46 = GALF in PMem
+         0x3930342d = 904- in PMem
+ https://en.wikipedia.org/wiki/Endianness: "The Intel x86 and AMD64 / x86-64 series of processors use the little-endian format"
+ Ref: https://cnx.org/contents/Y9Ps2snV@1/CPU-Structure-And-Functions
+ So... When fetching bytes from Register to PMem
+   => Processor stores data in reverse-byte sequence.
+     => When the Processor gets the "numeric data" (hexadecimal data format, like "47414c46" or "3930342d") from PMem to Register, it again reverses the bytes
+       => 0x47414c46 = FLAG in Register
+       => 0x3930342d = -409 in Register
+ => It only happens if we move data into register or store it in PMem. It won't be reversed if we use "db/dd/..." to define the data.
+ Example:   msg: db  'Hello, World!'
+ # After an instruction is fetched, the PC is incremented by the length of the instruction so that it will contain the address of the next instruction in the sequence
+ # Often, the instruction to be fetched must be retrieved from relatively slow memory, causing the CPU to stall while waiting for the instruction to be returned
+ => This issue is largely addressed in modern processors by caches and pipeline architectures
+
+     2, Decode
+ # The Instruction was fetched from PMem by CPU determines what will CPU do.
+Ref:
+--- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+[When an x86 CPU fetches an instruction, how does it know how many bytes it should fetch, before decoding what the instruction actually is?]
+ The x86 CPU loads multiple bytes at a time (16 bit for 8086 & 286, 32 bit for higher and these days 128bit at once transfer).
+ So the bytes are fetched anyway.
+
+ Even the first 8086 had a pre-fetcher which keeps loading words (16 bits) into the prefetch queue (cache these days).
+ So to answer your question, the decoder does the magic:
+ The decode looks at the first byte, and we have 256 possible values of that first byte. Depending on the value it determines one of the following:
+   - Single byte instruction, e.g. byte value 40h which would be INC EAX (in 32bit mode). Then its done.
+   - Normal instruction (2 bytes), e.g. 1st byte is 8Bh, the MOV instruction.
+     The decoder knows then that there is 2nd byte following which has the source and destination register or memory.
+     For example if the 2nd byte is 07h, then the instruction is MOV EAX,[EBX] (in 32 bit mode)
+   - Single byte instruction with parameter (called immediate).
+     Example 1st byte is B0h, so the decoder knows that this is the instruction MOV AL,something.
+     That something is on the 2nd byte
+   - Prefix. A special prefix like 0Fh or 66h etc that sets a special decoder flag so that it interprets the next bytes differently.
+
+   Of course this is a simplification, there can be various additional parameter values for immediates and for addresses
+   ,like MOV EAX,[10000h}
+   ,and addressing modes like MOV EAX,[EBX+EDX*4+10000h] which end up adding many bytes to an instruction.
+   And of course the decoder is different for 64bit instructions.
+https://www.quora.com/When-an-x86-CPU-fetches-an-instruction-how-does-it-know-how-many-bytes-it-should-fetch-before-decoding-what-the-instruction-actually-is
+--- --- --- --- ------ --- --- --- --- --- --- --- --- ---
+
+     3, Execute
+ # After the fetch and decode steps, the execute step is performed.
+ # Depending on the CPU architecture, this may consist of a single action or a sequence of actions
+
+
+***Reference:
+1.  Get next instruction
+2.  Decode (i.e., interpret its meaning) the instruction
+3.  Read Source Operands
+4.  Perform Operation (e.g., add two numbers)
+5.  Write Result
+6.  Determine which is the next instruction
+https://www.eecg.utoronto.ca/~moshovos/ECE243/l05-instruction-representation-stored-program.html

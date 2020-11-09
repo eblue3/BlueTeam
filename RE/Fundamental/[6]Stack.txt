@@ -1,0 +1,22 @@
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+                                    Stack                                                                           Stack
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+
+The stack is a Last In First Out (LIFO) data structure; data is pushed onto it and popped off of it in the reverse order.
+
+    mov ax, 006Ah
+    mov bx, F79Ah
+    mov cx, 1124h
+
+    push ax ; push the value in AX onto the top of the stack, which now holds the value 0x006A.
+    push bx ; do the same thing to the value in BX; the stack now has 0x006A and 0xF79A.
+    push cx ; now the stack has 0x006A, 0xF79A, and 0x1124.
+
+    call do_stuff ; do some stuff. The function is not forced to save the registers it uses, hence us saving them.
+
+    pop cx ; pop the element on top of the stack, 0x1124, into CX; the stack now has 0x006A and 0xF79A.
+    pop bx ; pop the element on top of the stack, 0xF79A, into BX; the stack now has just 0x006A.
+    pop ax ; pop the element on top of the stack, 0x006A, into AX; the stack is now empty.
+
+The Stack is usually used to pass arguments to functions or procedures and also to keep track of control flow when the call instruction is used.
+The other common use of the Stack is temporarily saving registers.

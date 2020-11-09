@@ -1,0 +1,28 @@
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+                              CPU Operation Modes                                                             CPU Operation Modes
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+                                                                       Real Mode
+
+Real Mode is a holdover from the original Intel 8086.
+You generally won't need to know anything about it (unless you are programming for a DOS-based system or, more likely, writing a boot loader that is directly called by the BIOS).
+The Intel 8086 accessed memory using 20-bit addresses.
+But, as the processor itself was 16-bit, Intel invented an addressing scheme that provided a way of mapping a 20-bit addressing space into 16-bit words.
+Today's x86 processors start in the so-called Real Mode, which is an operating mode that mimics the behavior of the 8086, with some very tiny differences, for backwards compatibility.
+In Real Mode, a segment and an offset register are used together to yield a final memory address.
+The value in the segment register is multiplied by 16 (shifted 4 bits to the left) and the offset is added to the result.
+This provides a usable address space of 1 MB.
+However, a quirk in the addressing scheme allows access past the 1 MB limit if a segment address of 0xFFFF (the highest possible) is used; on the 8086 and 8088, all accesses to this area wrapped around to the low end of memory, but on the 80286 and later, up to 65520 bytes past the 1 MB mark can be addressed this way if the A20 address line is enabled.
+See: The A20 Gate Saga. (https://en.wikibooks.org/wiki/X86_Assembly/16,_32,_and_64_Bits#The_A20_Gate_Saga)
+One benefit shared by Real Mode segmentation and by Protected Mode Multi-Segment Memory Model is that all addresses must be given relative to another address (this is, the segment base address).
+A program can have its own address space and completely ignore the segment registers, and thus no pointers have to be relocated to run the program. Programs can perform near calls and jumps within the same segment, and data is always relative to segment base addresses (which in the Real Mode addressing scheme are computed from the values loaded in the Segment Registers).
+This is what the DOS *.COM format does; the contents of the file are loaded into memory and blindly run. However, due to the fact that Real Mode segments are always 64 KB long, COM files could not be larger than that (in fact, they had to fit into 65280 bytes, since DOS used the first 256 bytes of a segment for housekeeping data); for many years this wasn't a problem.
+
+                                                                  Protected Mode
+***Flat Memory Model
+If programming in a modern 32-bit operating system (such as Linux, Windows), you are basically programming in flat 32-bit mode. Any register can be used in addressing, and it is generally more efficient to use a full 32-bit register instead of a 16-bit register part. Additionally, segment registers are generally unused in flat mode, and using them in flat mode is not considered best practice.
+
+***Multi-Segmented Memory Model
+Using a 32-bit register to address memory, the program can access (almost) all of the memory in a modern computer. For earlier processors (with only 16-bit registers) the segmented memory model was used. The 'CS', 'DS', and 'ES' registers are used to point to the different chunks of memory. For a small program (small model) the CS=DS=ES. For larger memory models, these 'segments' can point to different locations.
+
+***Long Mode
+The term "Long Mode" refers to the 64-bit mode.

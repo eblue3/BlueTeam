@@ -1,0 +1,39 @@
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+                              Addressing Modes                                                                Addressing Modes
+------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+
+The addressing mode indicates the manner in which the operand is presented.
+
+***Register Addressing
+    (operand address R is in the address field)
+
+    mov ax, bx  ; moves contents of register bx into ax
+
+***Immediate
+    (actual value is in the field)
+
+    mov ax, 1   ; moves value of 1 into register ax
+or
+    mov ax, 010Ch ; moves value of 0x010C into register ax
+
+***Direct memory addressing
+    (operand address is in the address field)
+
+.data
+    my_var dw 0abcdh ; my_var = 0xabcd
+.code
+    mov ax, [my_var] ; copy my_var content into ax (ax=0xabcd)
+
+***Direct offset addressing
+    (uses arithmetics to modify address)
+
+    byte_table db 12, 15, 16, 22 ; table of bytes
+    mov al, [byte_table + 2]
+    mov al, byte_table[2] ; same as previous instruction
+
+***Register Indirect
+    (field points to a register that contains the operand address)
+
+    mov ax, [di]
+
+The registers used for indirect addressing are BX, BP, SI, DI

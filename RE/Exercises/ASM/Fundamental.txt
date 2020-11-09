@@ -23,7 +23,7 @@ Program memory typically refers to flash memory when it is used to hold the prog
                   ||
                   VV
 --------------------------------------
-|     Address in Program Counter     |
+|   Address in Program Counter (PC)  |
 |           copied to MAR            |
 --------------------------------------
                   ||
@@ -39,7 +39,12 @@ Program memory typically refers to flash memory when it is used to hold the prog
 |   described by MAR is copied to    |
 |  the MDR (hold "data" for later)   |
 --------------------------------------
-
+                  ||
+                  VV
+--------------------------------------
+|    Instruction in MDR copied to    |
+|               the CIR              |
+--------------------------------------
 
 
 * Nearly/Almost all CPUs follow the "Instruction-cycle":
@@ -59,7 +64,7 @@ Program memory typically refers to flash memory when it is used to hold the prog
       => When the Processor gets the "numeric data" (hexadecimal data format, like "47414c46" or "3930342d") from PMem to Register, it again reverses the bytes
         => 0x47414c46 = FLAG in Register
         => 0x3930342d = -409 in Register
-  => It only happens if we move data into register or store it in PMem. It won't be reversed if we us "db/dd/..." to define the data.
+  => It only happens if we move data into register or store it in PMem. It won't be reversed if we use "db/dd/..." to define the data.
   Example:   msg: db  'Hello, World!'
   # After an instruction is fetched, the PC is incremented by the length of the instruction so that it will contain the address of the next instruction in the sequence
   # Often, the instruction to be fetched must be retrieved from relatively slow memory, causing the CPU to stall while waiting for the instruction to be returned

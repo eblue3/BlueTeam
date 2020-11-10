@@ -34,7 +34,7 @@ _main:
   ; handle = GetStdHandle(-11)
   push    dword -11
   call    _GetStdHandle@4
-  mov     [handle], eax
+  mov     [handle], eax       ; Set the size of [handle] to eax size
 
   ; WriteConsole(handle, &msg[0], Lenght, &written, 0)
   push    dword 0

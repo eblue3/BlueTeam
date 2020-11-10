@@ -12,7 +12,7 @@ Generally the source data remains unaltered after the operation.
     - Immediate addressing
     - Memory addressing
 
-*** Register Addressing:
+*** REGISTER ADDRESSING:
   In this addressing mode, a register contains the operand. But no ACTUAL VALUE is in neither operand.
   Depending upon the instruction, the register may be the first operand, the second operand or both.
   Ex:
@@ -21,14 +21,77 @@ Generally the source data remains unaltered after the operation.
   mov eax, ebx      ; Both the operands are in registers
   => As processing data between registers does not involve memory, it provides fastest processing of data.
 
-*** Immediate Addressing:
+*** IMMEDIATE ADDRESSING:
   (Actual value is in the field)
   mov ax, 1     ; Moves value of 1 into register ax
 or
   mov ax, 010Ch ; Moves value of 0x010C into register ax
 
+*** DIRECT MEMORY ADDRESSING:
+  When operands are specified in memory addressing mode, direct access to main memory, usually to the data segment, is required.
+  This way of addressing results in slower processing of data.
+  To locate the exact location of data in memory, we need the segment start address, which is typically found in the DS register and an offset value.
+  This offset value is also called effective address.
+  In direct addressing mode, the offset value is specified directly as part of the instruction, usually indicated by the variable name.
+  The assembler calculates the offset value and maintains a symbol table, which stores the offset values of all the variables used in the program.
+  In direct memory addressing, one of the operands refers to a memory location and the other operand references a register.
+  Ex:
+  add byte_value, edx   ; Adds the register in the memory location
+  mov ebx, word_value   ; Operand from the memory is added to register
 
 
+-------------------------------------------------------------------------------- --------------------------------------------------------------------------------
+Memory and Addressing Modes
+Declaring Static Data Regions
+You can declare static data regions (analogous to global variables) in x86 assembly using special assembler directives for this purpose. Data declarations should be preceded by the .DATA directive. Following this directive, the directives DB, DW, and DD can be used to declare one, two, and four byte data locations, respectively. Declared locations can be labeled with names for later reference — this is similar to declaring variables by name, but abides by some lower level rules. For example, locations declared in sequence will be located in memory next to one another.
+
+Example declarations:
+
+    .DATA
+    var	DB 64   	; Declare a byte, referred to as location var, containing the value 64.
+    var2 	DB ? 	; Declare an uninitialized byte, referred to as location var2.
+    	DB 10 	; Declare a byte with no label, containing the value 10. Its location is var2 + 1.
+    X 	DW ? 	; Declare a 2-byte uninitialized value, referred to as location X.
+    Y 	DD 30000     	; Declare a 4-byte value, referred to as location Y, initialized to 30000.
+
+Unlike in high level languages where arrays can have many dimensions and are accessed by indices, arrays in x86 assembly language are simply a number of cells located contiguously in memory. An array can be declared by just listing the values, as in the first example below. Two other common methods used for declaring arrays of data are the DUP directive and the use of string literals. The DUP directive tells the assembler to duplicate an expression a given number of times. For example, 4 DUP(2) is equivalent to 2, 2, 2, 2.
+
+Some examples:
+
+    Z 	DD 1, 2, 3 	; Declare three 4-byte values, initialized to 1, 2, and 3. The value of location Z + 8 will be 3.
+    bytes   	DB 10 DUP(?) 	; Declare 10 uninitialized bytes starting at location bytes.
+    arr 	DD 100 DUP(0)     	; Declare 100 4-byte words starting at location arr, all initialized to 0
+    str 	DB 'hello',0 	; Declare 6 bytes starting at the address str, initialized to the ASCII character values for hello and the null (0) byte.
+
+Addressing Memory
+Modern x86-compatible processors are capable of addressing up to 232 bytes of memory: memory addresses are 32-bits wide. In the examples above, where we used labels to refer to memory regions, these labels are actually replaced by the assembler with 32-bit quantities that specify addresses in memory. In addition to supporting referring to memory regions by labels (i.e. constant values), the x86 provides a flexible scheme for computing and referring to memory addresses: up to two of the 32-bit registers and a 32-bit signed constant can be added together to compute a memory address. One of the registers can be optionally pre-multiplied by 2, 4, or 8.
+
+The addressing modes can be used with many x86 instructions (we'll describe them in the next section). Here we illustrate some examples using the mov instruction that moves data between registers and memory. This instruction has two operands: the first is the destination and the second specifies the source.
+
+Some examples of mov instructions using address computations are:
+
+    mov eax, [ebx] 	; Move the 4 bytes in memory at the address contained in EBX into EAX
+    mov [var], ebx 	; Move the contents of EBX into the 4 bytes at memory address var. (Note, var is a 32-bit constant).
+    mov eax, [esi-4] 	; Move 4 bytes at memory address ESI + (-4) into EAX
+    mov [esi+eax], cl 	; Move the contents of CL into the byte at address ESI+EAX
+    mov edx, [esi+4*ebx]     	; Move the 4 bytes of data at address ESI+4*EBX into EDX
+
+Some examples of invalid address calculations include:
+
+    mov eax, [ebx-ecx] 	; Can only add register values
+    mov [eax+esi+edi], ebx     	; At most 2 registers in address computation
+
+Size Directives
+In general, the intended size of the of the data item at a given memory address can be inferred from the assembly code instruction in which it is referenced. For example, in all of the above instructions, the size of the memory regions could be inferred from the size of the register operand. When we were loading a 32-bit register, the assembler could infer that the region of memory we were referring to was 4 bytes wide. When we were storing the value of a one byte register to memory, the assembler could infer that we wanted the address to refer to a single byte in memory.
+
+However, in some cases the size of a referred-to memory region is ambiguous. Consider the instruction mov [ebx], 2. Should this instruction move the value 2 into the single byte at address EBX? Perhaps it should move the 32-bit integer representation of 2 into the 4-bytes starting at address EBX. Since either is a valid possible interpretation, the assembler must be explicitly directed as to which is correct. The size directives BYTE PTR, WORD PTR, and DWORD PTR serve this purpose, indicating sizes of 1, 2, and 4 bytes respectively.
+
+For example:
+
+    mov BYTE PTR [ebx], 2 	; Move 2 into the single byte at the address stored in EBX.
+    mov WORD PTR [ebx], 2 	; Move the 16-bit integer representation of 2 into the 2 bytes starting at the address in EBX.
+    mov DWORD PTR [ebx], 2     	; Move the 32-bit integer representation of 2 into the 4 bytes starting at the address in EBX.
+-------------------------------------------------------------------------------- --------------------------------------------------------------------------------
 
 The addressing mode indicates the manner in which the operand is presented.
 

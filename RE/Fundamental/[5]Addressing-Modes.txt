@@ -1,6 +1,34 @@
 ------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
                               Addressing Modes                                                                Addressing Modes
 ------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
+Most assembly language instructions require operands to be processed.
+An operand address provides the location where the data to be processed is stored.
+Some instructions do not require an operand, whereas some other instructions may require one, two or three operands.
+When an instruction requires two operands, the first operand is generally the destination, which contains data in a register or memory location and the second operand is the source.
+Source contains either the data to be delivered (immediate addressing) or the address (in register or memory) of the data.
+Generally the source data remains unaltered after the operation.
+  The three basic modes of addressing are:
+    - Register addressing
+    - Immediate addressing
+    - Memory addressing
+
+*** Register Addressing:
+  In this addressing mode, a register contains the operand. But no ACTUAL VALUE is in neither operand.
+  Depending upon the instruction, the register may be the first operand, the second operand or both.
+  Ex:
+  mov dx, var1      ; Register in first operand
+  mov var2, cx      ; Register in second operand
+  mov eax, ebx      ; Both the operands are in registers
+  => As processing data between registers does not involve memory, it provides fastest processing of data.
+
+*** Immediate Addressing:
+  (Actual value is in the field)
+  mov ax, 1     ; Moves value of 1 into register ax
+or
+  mov ax, 010Ch ; Moves value of 0x010C into register ax
+
+
+
 
 The addressing mode indicates the manner in which the operand is presented.
 
@@ -28,8 +56,7 @@ or
     (uses arithmetics to modify address)
 
     byte_table db 12, 15, 16, 22 ; table of bytes
-    mov al, [byte_table + 2]
-    mov al, byte_table[2] ; same as previous instruction
+    mov al, byte_table + 2
 
 ***Register Indirect
     (field points to a register that contains the operand address)

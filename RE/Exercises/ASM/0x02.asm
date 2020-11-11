@@ -1,13 +1,13 @@
 ; ------------------------------------------------------------------------------
-; 0x02a
+; 0x02
 ;                              RegValue.asm
 ; ------------------------------------------------------------------------------
 ; This will print out value of GPR Data Registers.
 ; Testing the Addressing Modes.
 ; ------------------------------------------------------------------------------
 ; C Library used: "printf"
-; To assemble to .obj: nasm -f win32 0x02a.asm
-; To compile to .exe:  gcc 0x02a.obj -o 0x02a.exe
+; To assemble to .obj: nasm -f win32 0x02.asm
+; To compile to .exe:  gcc 0x02.obj -o 0x02.exe
 ; ------------------------------------------------------------------------------
 
         global    _main                 ; declare main() method
@@ -42,9 +42,9 @@ section .text
 
 ; ------------------------------------------------------------------------------
 ; Output:
-; [BLUE3]>nasm -fwin32 0x02a.asm
-; [BLUE3]>gcc 0x02a.obj -o 0x02a.exe
-; [BLUE3]>0x02a.exe
+; [BLUE3]>nasm -fwin32 0x02.asm
+; [BLUE3]>gcc 0x02.obj -o 0x02.exe
+; [BLUE3]>0x02.exe
 ; test1
 ; text2
 ; doit3

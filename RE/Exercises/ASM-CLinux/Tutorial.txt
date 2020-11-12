@@ -1,0 +1,65 @@
+*** Calling assembly function from C:
+*** C file:
+
+    #include <stdio.h>
+    int add(int a, int b);
+    int main(int argc, char **argv)
+    {
+      printf("%d\n", add(2, 6));
+      return 0;
+    }
+
+*** Assembly file:
+
+    global add
+    section .data
+    section .text
+    add:
+        mov   eax, [esp+4]   ; argument 1
+        add   eax, [esp+8]   ; argument 2
+        ret
+    compiling:
+    $ nasm -f elf add.asm
+    $ gcc -Wall main.c add.o
+    $ ./a.out
+    8
+    $
+
+*** Calling C function from assembly:
+*** C file:
+
+    int add(int a, int b)
+    {
+      return a + b;
+    }
+
+*** Assembly file:
+
+    extern add
+    extern printf
+    extern exit
+
+    global _start
+
+    section .data
+      format db "%d", 10, 0
+    section .text
+
+    _start:
+        push  6
+        push  2
+        call  add     ; add(2, 6)
+
+        push  eax
+        push  format
+        call  printf  ; printf(format, eax)
+
+        push  0
+        call exit     ; exit(0)
+
+*** Compiling:
+$ gcc -Wall -c add.c
+$ nasm -f elf main.asm
+$ ld main.o add.o -lc -I /lib/ld-linux.so.2
+$ ./a.out
+8

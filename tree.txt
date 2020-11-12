@@ -1,15 +1,34 @@
 [01;34mBlueTeam[00m
 ├── [01;34mRE[00m
 │   ├── [01;34mExercises[00m
-│   │   ├── [01;34mASM[00m
+│   │   ├── [01;34mASM-Linux[00m
+│   │   ├── [01;34mASM-Wins[00m
 │   │   └── [01;34mRes-Editor[00m
+│   ├── [01;34mFundamental[00m
+│   │   ├── [1]How-CPU-Works.txt
+│   │   ├── [2]Basic-Syntax.txt
+│   │   ├── [3]Assembly-Language-Statements.txt
+│   │   ├── [4]Register.txt
+│   │   ├── [5]Addressing-Modes.txt
+│   │   ├── [6]Stack.txt
+│   │   ├── [7]CPU-Ops-Modes.txt
+│   │   ├── [01;35mFetch-Decode-Execute_Cycle.png[00m
+│   │   ├── FLAGS-Register.PNG
+│   │   └── [01;35mTable_of_x86_Registers_svg.svg[00m
 │   └── [01;34mMaterial[00m
 │       ├── A Helpful Guide [Part 1].pdf
 │       ├── A Helpful Guide [Part 2].pdf
-│       ├── Assembly Tutorial.pdf
+│       ├── A Helpful Guide [Part 3].pdf
+│       ├── [AT&T syntax linux]ProgrammingGroundUp.pdf
+│       ├── C-CheatSheet.pdf
+│       ├── [Intel]Assembly Tutorial.pdf
 │       ├── [01;35mRegisters2.jpg[00m
 │       ├── Registers.PNG
 │       ├── RE-Roadmap.PNG
+│       ├── The Art of Assembly Language (2nd ed.).pdf
+│       ├── Win32-API-Cheatsheet.txt
+│       ├── [Windows] Assembly Tutorial.pdf
+│       ├── Windows_Programming_in_Assembly_Language.pdf
 │       ├── x64 Cheatsheet.pdf
 │       ├── X86 Architecture.pdf
 │       ├── x86 Assembly Language Reference Manual - March 2020.pdf
@@ -18,4 +37,4 @@
 ├── README.md
 └── tree.txt
 
-5 directories, 13 files
+7 directories, 30 files

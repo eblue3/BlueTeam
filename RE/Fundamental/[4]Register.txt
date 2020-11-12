@@ -19,6 +19,16 @@ Index Registers:
    7, (SI) Source Index register. Used as a pointer to a source in stream operations.
    8, (DI) Destination Index register. Used as a pointer to a destination in stream operations.
 
+   Address  Name                      Description
+   EAX*     Accumulator Register      calculations for operations and results data
+   EBX      Base Register             pointer to data in the DS segment
+   ECX*     Count Register            counter for string and loop operations
+   EDX*     Data Register             input/output pointer
+   ESI      Source Index              source pointer for string operations
+   EDI      Destination Index         destination pointer for string operations
+   ESP      Stack Pointer             stack pointer, should not be used
+   EBP      Base Pointer              pointer to data on the stack
+
 (AX) => (CX) => (DX) => (BX) => (SP) => (BP) => (SI) => (DI): Same order that is used in a push-to-stack operation
 "R" = Register
 "E" = Extended
@@ -39,6 +49,11 @@ Segment Registers <=> Segmented Memory Registers
    4, (ES) Extra Segment.  Pointer to extra data ('E' stands for 'Extra').
    5, (FS) F Segment.      Pointer to more extra data ('F' comes after 'E').
    6, (GS) G Segment.      Pointer to still more extra data ('G' comes after 'F').
+
+   Address          Name            Description
+   CS               Code Segment    where instructions being executed are stored
+   DS, ES, FS, GS   Data Segment    data segment
+   SS               Stack Segment   where the stack for the current program is stored
 
    Most applications on most modern operating systems (like FreeBSD, Linux or Microsoft Windows)
 use a memory model that points nearly all segment registers to the same place (and uses paging instead), effectively disabling their use.

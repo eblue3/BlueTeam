@@ -1,5 +1,5 @@
 ------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
-                              Addressing Modes                                                                Addressing Modes
+                              addressing Modes                                                                addressing Modes
 ------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
 Most assembly language instructions require operands to be processed.
 An operand address provides the location where the data to be processed is stored.
@@ -12,7 +12,7 @@ Generally the source data remains unaltered after the operation.
     - Immediate addressing
     - Memory addressing
 
-*** REGISTER ADDRESSING:
+*** REGISTER addRESSING:            (Operand address R is in the address field)
   In this addressing mode, a register contains the operand. But no ACTUAL VALUE is in neither operand.
   Depending upon the instruction, the register may be the first operand, the second operand or both.
   Ex:
@@ -21,13 +21,12 @@ Generally the source data remains unaltered after the operation.
   mov eax, ebx      ; Both the operands are in registers
   => As processing data between registers does not involve memory, it provides fastest processing of data.
 
-*** IMMEDIATE ADDRESSING:
-  (Actual value is in the field)
-  mov ax, 1     ; Moves value of 1 into register ax
+*** IMMEDIATE addRESSING:           (Actual value is in the field)
+  mov ax, 1     ; moves value 1 into register ax
 or
-  mov ax, 010Ch ; Moves value of 0x010C into register ax
+  mov ax, 010Ch ; moves value 0x010C into register ax
 
-*** DIRECT MEMORY ADDRESSING:
+*** DIRECT MEMORY addRESSING:       (Operand address is in the address field)
   When operands are specified in memory addressing mode, direct access to main memory, usually to the data segment, is required.
   This way of addressing results in slower processing of data.
   To locate the exact location of data in memory, we need the segment start address, which is typically found in the DS register and an offset value.
@@ -36,12 +35,36 @@ or
   The assembler calculates the offset value and maintains a symbol table, which stores the offset values of all the variables used in the program.
   In direct memory addressing, one of the operands refers to a memory location and the other operand references a register.
   Ex:
-  add byte_value, edx   ; Adds the register in the memory location
-  mov ebx, word_value   ; Operand from the memory is added to register
+  add byte_value, edx                     ; adds the register in the memory location
+  mov ebx, word_value                     ; Operand from the memory is added to register
+or
+  .data
+      var dw 0abcdh ; var = 0xabcd
+  .code
+      mov ax, var ; copy var content into ax (ax=0xabcd)
 
+*** DIRECT OFFSET addRESSING        (Use arithmetics to modify address)
+  This addressing mode uses the arithmetic operators to modify an address.
+  .data
+  byte_table DB 14, 15, 22, 45            ; Tables of bytes
+  word_table DW 134, 345, 564, 123        ; Tables of words
+  .code
+  ...
+  mov CL, byte_table + 2                  ; Get from the 3rd element of the byte_table
+  mov CX, word_table + 3                  ; Get from the 4th element of the word_table
+
+*** INDIRECT MEMORY addRESSING      (Field "[]" points to a register contains operand address)
+  Ex:
+  mov eax, [edi]
+or
+  var1 TIMES 10 DW 0      ; Allocates 10 words (2 bytes) each initialized to 0
+  mov ebx, [var1]         ; Effective address of var1 in ebx
+  mov [ebx], 110          ; var1[0] = 110
+  add ebx, 2              ; ebx = ebx +2
+  mov [ebx], 123          ; var1[1] = 123
 
 -------------------------------------------------------------------------------- --------------------------------------------------------------------------------
-Memory and Addressing Modes
+Memory and addressing Modes
 Declaring Static Data Regions
 You can declare static data regions (analogous to global variables) in x86 assembly using special assembler directives for this purpose. Data declarations should be preceded by the .DATA directive. Following this directive, the directives DB, DW, and DD can be used to declare one, two, and four byte data locations, respectively. Declared locations can be labeled with names for later reference — this is similar to declaring variables by name, but abides by some lower level rules. For example, locations declared in sequence will be located in memory next to one another.
 
@@ -63,18 +86,18 @@ Some examples:
     arr 	DD 100 DUP(0)     	; Declare 100 4-byte words starting at location arr, all initialized to 0
     str 	DB 'hello',0 	; Declare 6 bytes starting at the address str, initialized to the ASCII character values for hello and the null (0) byte.
 
-Addressing Memory
+addressing Memory
 Modern x86-compatible processors are capable of addressing up to 232 bytes of memory: memory addresses are 32-bits wide. In the examples above, where we used labels to refer to memory regions, these labels are actually replaced by the assembler with 32-bit quantities that specify addresses in memory. In addition to supporting referring to memory regions by labels (i.e. constant values), the x86 provides a flexible scheme for computing and referring to memory addresses: up to two of the 32-bit registers and a 32-bit signed constant can be added together to compute a memory address. One of the registers can be optionally pre-multiplied by 2, 4, or 8.
 
 The addressing modes can be used with many x86 instructions (we'll describe them in the next section). Here we illustrate some examples using the mov instruction that moves data between registers and memory. This instruction has two operands: the first is the destination and the second specifies the source.
 
 Some examples of mov instructions using address computations are:
 
-    mov eax, [ebx] 	; Move the 4 bytes in memory at the address contained in EBX into EAX
-    mov [var], ebx 	; Move the contents of EBX into the 4 bytes at memory address var. (Note, var is a 32-bit constant).
-    mov eax, [esi-4] 	; Move 4 bytes at memory address ESI + (-4) into EAX
-    mov [esi+eax], cl 	; Move the contents of CL into the byte at address ESI+EAX
-    mov edx, [esi+4*ebx]     	; Move the 4 bytes of data at address ESI+4*EBX into EDX
+    mov eax, [ebx] 	; move the 4 bytes in memory at the address contained in ebx into EAX
+    mov [var], ebx 	; move the contents of ebx into the 4 bytes at memory address var. (Note, var is a 32-bit constant).
+    mov eax, [esi-4] 	; move 4 bytes at memory address ESI + (-4) into EAX
+    mov [esi+eax], cl 	; move the contents of CL into the byte at address ESI+EAX
+    mov edx, [esi+4*ebx]     	; move the 4 bytes of data at address ESI+4*ebx into EDX
 
 Some examples of invalid address calculations include:
 
@@ -84,18 +107,18 @@ Some examples of invalid address calculations include:
 Size Directives
 In general, the intended size of the of the data item at a given memory address can be inferred from the assembly code instruction in which it is referenced. For example, in all of the above instructions, the size of the memory regions could be inferred from the size of the register operand. When we were loading a 32-bit register, the assembler could infer that the region of memory we were referring to was 4 bytes wide. When we were storing the value of a one byte register to memory, the assembler could infer that we wanted the address to refer to a single byte in memory.
 
-However, in some cases the size of a referred-to memory region is ambiguous. Consider the instruction mov [ebx], 2. Should this instruction move the value 2 into the single byte at address EBX? Perhaps it should move the 32-bit integer representation of 2 into the 4-bytes starting at address EBX. Since either is a valid possible interpretation, the assembler must be explicitly directed as to which is correct. The size directives BYTE PTR, WORD PTR, and DWORD PTR serve this purpose, indicating sizes of 1, 2, and 4 bytes respectively.
+However, in some cases the size of a referred-to memory region is ambiguous. Consider the instruction mov [ebx], 2. Should this instruction move the value 2 into the single byte at address ebx? Perhaps it should move the 32-bit integer representation of 2 into the 4-bytes starting at address ebx. Since either is a valid possible interpretation, the assembler must be explicitly directed as to which is correct. The size directives BYTE PTR, WORD PTR, and DWORD PTR serve this purpose, indicating sizes of 1, 2, and 4 bytes respectively.
 
 For example:
 
-    mov BYTE PTR [ebx], 2 	; Move 2 into the single byte at the address stored in EBX.
-    mov WORD PTR [ebx], 2 	; Move the 16-bit integer representation of 2 into the 2 bytes starting at the address in EBX.
-    mov DWORD PTR [ebx], 2     	; Move the 32-bit integer representation of 2 into the 4 bytes starting at the address in EBX.
+    mov BYTE PTR [ebx], 2 	; move 2 into the single byte at the address stored in ebx.
+    mov WORD PTR [ebx], 2 	; move the 16-bit integer representation of 2 into the 2 bytes starting at the address in ebx.
+    mov DWORD PTR [ebx], 2     	; move the 32-bit integer representation of 2 into the 4 bytes starting at the address in ebx.
 -------------------------------------------------------------------------------- --------------------------------------------------------------------------------
 
 The addressing mode indicates the manner in which the operand is presented.
 
-***Register Addressing
+***Register addressing
     (operand address R is in the address field)
 
     mov ax, bx  ; moves contents of register bx into ax
@@ -111,9 +134,9 @@ or
     (operand address is in the address field)
 
 .data
-    my_var dw 0abcdh ; my_var = 0xabcd
+    var dw 0abcdh ; var = 0xabcd
 .code
-    mov ax, [my_var] ; copy my_var content into ax (ax=0xabcd)
+    mov ax, [var] ; copy var content into ax (ax=0xabcd)
 
 ***Direct offset addressing
     (uses arithmetics to modify address)

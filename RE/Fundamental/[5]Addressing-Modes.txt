@@ -12,7 +12,7 @@ Generally the source data remains unaltered after the operation.
     - Immediate addressing
     - Memory addressing
 
-*** REGISTER addRESSING:            (Operand address R is in the address field)
+*** REGISTER ADDRESSING:            (Operand address R is in the address field)
   In this addressing mode, a register contains the operand. But no ACTUAL VALUE is in neither operand.
   Depending upon the instruction, the register may be the first operand, the second operand or both.
   Ex:
@@ -21,12 +21,12 @@ Generally the source data remains unaltered after the operation.
   mov eax, ebx      ; Both the operands are in registers
   => As processing data between registers does not involve memory, it provides fastest processing of data.
 
-*** IMMEDIATE addRESSING:           (Actual value is in the field)
+*** IMMEDIATE ADDRESSING:           (Actual value is in the field)
   mov ax, 1     ; moves value 1 into register ax
 or
   mov ax, 010Ch ; moves value 0x010C into register ax
 
-*** DIRECT MEMORY addRESSING:       (Operand address is in the address field)
+*** DIRECT MEMORY ADDRESSING:       (Operand address is in the address field)
   When operands are specified in memory addressing mode, direct access to main memory, usually to the data segment, is required.
   This way of addressing results in slower processing of data.
   To locate the exact location of data in memory, we need the segment start address, which is typically found in the DS register and an offset value.
@@ -43,7 +43,7 @@ or
   .code
       mov ax, var ; copy var content into ax (ax=0xabcd)
 
-*** DIRECT OFFSET addRESSING        (Use arithmetics to modify address)
+*** DIRECT OFFSET ADDRESSING        (Use arithmetics to modify address)
   This addressing mode uses the arithmetic operators to modify an address.
   .data
   byte_table DB 14, 15, 22, 45            ; Tables of bytes
@@ -53,7 +53,7 @@ or
   mov CL, byte_table + 2                  ; Get from the 3rd element of the byte_table
   mov CX, word_table + 3                  ; Get from the 4th element of the word_table
 
-*** INDIRECT MEMORY addRESSING      (Field "[]" points to a register contains operand address)
+*** INDIRECT MEMORY ADDRESSING      (Field "[]" points to a register contains operand address)
   Ex:
   mov eax, [edi]
 or

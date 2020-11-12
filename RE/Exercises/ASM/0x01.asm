@@ -1,13 +1,13 @@
 ; ------------------------------------------------------------------------------
-; 0x01b
+; 0x01
 ;                              HelloWorld.asm
 ; ------------------------------------------------------------------------------
 ; This is a Win32 console program that writes "Hello World" on a single line and
 ; then exits.
 ; ------------------------------------------------------------------------------
 ; C Library used: "printf"
-; To assemble to .obj: nasm -f win32 0x01b.asm
-; To compile to .exe:  gcc 0x01b.obj -o 0x01b.exe
+; To assemble to .obj: nasm -f win32 0x01.asm
+; To compile to .exe:  gcc 0x01.obj -o 0x01.exe
 ; ------------------------------------------------------------------------------
 
         global    _main                 ; declare main() method
@@ -29,9 +29,9 @@ _main:                            ; the entry point! void main()
 
 ; ------------------------------------------------------------------------------
 ; Output:
-; [BLUE3]>nasm -fwin32 0x01b.asm
-; [BLUE3]>gcc 0x01b.obj -o 0x01b.exe
-; [BLUE3]>0x01b.exe
+; [BLUE3]>nasm -fwin32 0x01.asm
+; [BLUE3]>gcc 0x01.obj -o 0x01.exe
+; [BLUE3]>0x01.exe
 ; Hello, world!
 ; <New blank line>
 ; ------------------------------------------------------------------------------

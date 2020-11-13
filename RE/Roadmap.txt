@@ -1,0 +1,23 @@
+1, ASM & x86 Architecture:
+- How CPU works
+- Registers
+- Memory Addressing
+- Know at least 2x basic commands
+- Stack Layout
+- Activity Before & After call
+- Call Convention
+- Program Control Flow
+- "Branching"?
+- For/While loop
+
+2, Windows API
+- How to call it
+- Construct?: API(arg1, arg2, arg3) => push arguments to stack => call WinAPI function
+
+3, RE Tools
+- r4ndom Reverse Engineering
+
+4, PE File Structure
+5, Malware Techniques
+- Ringzer0ctf
+- RE Malware Samples

@@ -1,5 +1,5 @@
 ------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
-                              addressing Modes                                                                addressing Modes
+                              Addressing Modes                                                                Addressing Modes
 ------------------------------------- ## -------------------------------------- ------------------------------------- ## --------------------------------------
 Most assembly language instructions require operands to be processed.
 An operand address provides the location where the data to be processed is stored.
@@ -46,18 +46,18 @@ or
 *** DIRECT OFFSET ADDRESSING        (Use arithmetics to modify address)
   This addressing mode uses the arithmetic operators to modify an address.
   .data
-  byte_table DB 14, 15, 22, 45            ; Tables of bytes
-  word_table DW 134, 345, 564, 123        ; Tables of words
+  byte_table db 14, 15, 22, 45            ; Tables of bytes
+  word_table dw 134, 345, 564, 123        ; Tables of words
   .code
   ...
-  mov CL, byte_table + 2                  ; Get from the 3rd element of the byte_table
-  mov CX, word_table + 3                  ; Get from the 4th element of the word_table
+  mov cl, byte_table + 2                  ; Get from the 3rd element of the byte_table
+  mov cx, word_table + 3                  ; Get from the 4th element of the word_table
 
 *** INDIRECT MEMORY ADDRESSING      (Field "[]" points to a register contains operand address)
   Ex:
   mov eax, [edi]
 or
-  var1 TIMES 10 DW 0      ; Allocates 10 words (2 bytes) each initialized to 0
+  var1 times 10 dw 0      ; Allocates 10 words (2 bytes) each initialized to 0
   mov ebx, [var1]         ; Effective address of var1 in ebx
   mov [ebx], 110          ; var1[0] = 110
   add ebx, 2              ; ebx = ebx +2
@@ -66,27 +66,34 @@ or
 -------------------------------------------------------------------------------- --------------------------------------------------------------------------------
 Memory and addressing Modes
 Declaring Static Data Regions
-You can declare static data regions (analogous to global variables) in x86 assembly using special assembler directives for this purpose. Data declarations should be preceded by the .DATA directive. Following this directive, the directives DB, DW, and DD can be used to declare one, two, and four byte data locations, respectively. Declared locations can be labeled with names for later reference — this is similar to declaring variables by name, but abides by some lower level rules. For example, locations declared in sequence will be located in memory next to one another.
+You can declare static data regions (analogous to global variables) in x86 assembly using special assembler directives for this purpose.
+Data declarations should be preceded by the .DATA directive.
+Following this directive, the directives DB, DW, and DD can be used to declare one, two, and four byte data locations, respectively.
+Declared locations can be labeled with names for later reference — this is similar to declaring variables by name, but abides by some lower level rules.
+For example, locations declared in sequence will be located in memory next to one another.
 
 Example declarations:
 
-    .DATA
-    var	DB 64   	; Declare a byte, referred to as location var, containing the value 64.
-    var2 	DB ? 	; Declare an uninitialized byte, referred to as location var2.
-    	DB 10 	; Declare a byte with no label, containing the value 10. Its location is var2 + 1.
-    X 	DW ? 	; Declare a 2-byte uninitialized value, referred to as location X.
-    Y 	DD 30000     	; Declare a 4-byte value, referred to as location Y, initialized to 30000.
+    .data
+    var	    DB 64   	; Declare a byte, referred to as location var, containing the value 64.
+    var2 	  DB ? 	    ; Declare an uninitialized byte, referred to as location var2.
+    	      DB 10 	  ; Declare a byte with no label, containing the value 10. Its location is var2 + 1.
+    X 	    DW ? 	    ; Declare a 2-byte uninitialized value, referred to as location X.
+    Y 	    DD 30000  ; Declare a 4-byte value, referred to as location Y, initialized to 30000.
 
-Unlike in high level languages where arrays can have many dimensions and are accessed by indices, arrays in x86 assembly language are simply a number of cells located contiguously in memory. An array can be declared by just listing the values, as in the first example below. Two other common methods used for declaring arrays of data are the DUP directive and the use of string literals. The DUP directive tells the assembler to duplicate an expression a given number of times. For example, 4 DUP(2) is equivalent to 2, 2, 2, 2.
+Unlike in high level languages where arrays can have many dimensions and are accessed by indices, arrays in x86 assembly language are simply a number of cells located contiguously in memory.
+An array can be declared by just listing the values, as in the first example below.
+Two other common methods used for declaring arrays of data are the DUP directive and the use of string literals.
+The DUP directive tells the assembler to duplicate an expression a given number of times. For example, 4 DUP(2) is equivalent to 2, 2, 2, 2.
 
 Some examples:
 
-    Z 	DD 1, 2, 3 	; Declare three 4-byte values, initialized to 1, 2, and 3. The value of location Z + 8 will be 3.
-    bytes   	DB 10 DUP(?) 	; Declare 10 uninitialized bytes starting at location bytes.
-    arr 	DD 100 DUP(0)     	; Declare 100 4-byte words starting at location arr, all initialized to 0
-    str 	DB 'hello',0 	; Declare 6 bytes starting at the address str, initialized to the ASCII character values for hello and the null (0) byte.
+    Z         dd 1, 2, 3 	; Declare three 4-byte values, initialized to 1, 2, and 3. The value of location Z + 8 will be 3.
+    bytes   	db 10 dup(?) 	; Declare 10 uninitialized bytes starting at location bytes.
+    arr 	    dd 100 dup(0)     	; Declare 100 4-byte words starting at location arr, all initialized to 0
+    str 	    db 'hello',0 	; Declare 6 bytes starting at the address str, initialized to the ASCII character values for hello and the null (0) byte.
 
-addressing Memory
+Addressing Memory
 Modern x86-compatible processors are capable of addressing up to 232 bytes of memory: memory addresses are 32-bits wide. In the examples above, where we used labels to refer to memory regions, these labels are actually replaced by the assembler with 32-bit quantities that specify addresses in memory. In addition to supporting referring to memory regions by labels (i.e. constant values), the x86 provides a flexible scheme for computing and referring to memory addresses: up to two of the 32-bit registers and a 32-bit signed constant can be added together to compute a memory address. One of the registers can be optionally pre-multiplied by 2, 4, or 8.
 
 The addressing modes can be used with many x86 instructions (we'll describe them in the next section). Here we illustrate some examples using the mov instruction that moves data between registers and memory. This instruction has two operands: the first is the destination and the second specifies the source.
@@ -115,38 +122,3 @@ For example:
     mov WORD PTR [ebx], 2 	; move the 16-bit integer representation of 2 into the 2 bytes starting at the address in ebx.
     mov DWORD PTR [ebx], 2     	; move the 32-bit integer representation of 2 into the 4 bytes starting at the address in ebx.
 -------------------------------------------------------------------------------- --------------------------------------------------------------------------------
-
-The addressing mode indicates the manner in which the operand is presented.
-
-***Register addressing
-    (operand address R is in the address field)
-
-    mov ax, bx  ; moves contents of register bx into ax
-
-***Immediate
-    (actual value is in the field)
-
-    mov ax, 1   ; moves value of 1 into register ax
-or
-    mov ax, 010Ch ; moves value of 0x010C into register ax
-
-***Direct memory addressing
-    (operand address is in the address field)
-
-.data
-    var dw 0abcdh ; var = 0xabcd
-.code
-    mov ax, [var] ; copy var content into ax (ax=0xabcd)
-
-***Direct offset addressing
-    (uses arithmetics to modify address)
-
-    byte_table db 12, 15, 16, 22 ; table of bytes
-    mov al, byte_table + 2
-
-***Register Indirect
-    (field points to a register that contains the operand address)
-
-    mov ax, [di]
-
-The registers used for indirect addressing are BX, BP, SI, DI

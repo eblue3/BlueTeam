@@ -1,0 +1,247 @@
+----------------------------- NOP ----------------------------------------------
+--- No Operation.
+Performs no operation.
+This instruction is a one-byte instruction that takes up space in the instruction stream but does not affect the machine context, except the EIP register.
+The NOP instruction is an alias mnemonic for the XCHG (E)AX, (E)AX instruction.
+You can use NOP for padding.
+
+----------------------------- PUSH/POP -----------------------------------------
+--- Push — Push stack (Opcodes: FF, 89, 8A, 8B, 8C, 8E, ...)
+The push instruction places its operand onto the top of the hardware supported stack in memory.
+Specifically, push first decrements ESP by 4, then places its operand into the contents of the 32-bit location at address [ESP].
+ESP (the stack pointer) is decremented by push since the x86 stack grows down - i.e. the stack grows from high addresses to lower addresses.
+
+    - Syntax
+    push <reg32>
+    push <mem>
+    push <con32>
+
+    - Examples
+    push eax — push eax on the stack
+    push [var] — push the 4 bytes at address var onto the stack
+
+--- Pop — Pop stack
+The pop instruction removes the 4-byte data element from the top of the hardware-supported stack into the specified operand (i.e. register or memory location).
+It first moves the 4 bytes located at memory location [SP] into the specified register or memory location, and then increments SP by 4.
+
+    - Syntax
+    pop <reg32>
+    pop <mem>
+
+    - Examples
+    pop edi — pop the top element of the stack into EDI.
+    pop [ebx] — pop the top element of the stack into memory at the four bytes starting at location EBX.
+
+----------------------------- CALL/RET -----------------------------------------
+--- Subroutine call and return
+These instructions implement a subroutine call and return.
+The call instruction first pushes the current code location onto the hardware supported stack in memory (see the push instruction for details), and then performs an unconditional jump to the code location indicated by the label operand.
+Unlike the simple jump instructions, the call instruction saves the location to return to when the subroutine completes.
+The ret instruction implements a subroutine return mechanism.
+This instruction first pops a code location off the hardware supported in-memory stack (see the pop instruction for details).
+It then performs an unconditional jump to the retrieved code location.
+
+    - Syntax
+    call <label>
+    ret
+
+----------------------------- MOV ----------------------------------------------
+--- Move (Opcodes: 88, 89, 8A, 8B, 8C, 8E, ...)
+The mov instruction copies the data item referred to by its second operand (i.e. register contents, memory contents, or a constant value) into the location referred to by its first operand (i.e. a register or memory).
+While register-to-register moves are possible, direct memory-to-memory moves are not.
+In cases where memory transfers are desired, the source memory contents must first be loaded into a register, then can be stored to the destination memory address.
+
+    - Syntax
+    mov <reg>,<reg>
+    mov <reg>,<mem>
+    mov <mem>,<reg>
+    mov <reg>,<const>
+    mov <mem>,<const>
+
+    - Examples
+    mov eax, ebx — copy the value in ebx into eax
+    mov byte ptr [var], 5 — store the value 5 into the byte at location var
+
+*Imagine we have a CPU with only two registers, EAX and EBX.
+
+    mov ebx, eax
+
+*Simply copies the value in eax to the ebx register
+
+ | EAX : 0123456 |   ---->   | EAX : 0123456 |
+ | EBX : 0000000 |   ====>   | EBX : 0123456 |
+
+Now let's add some memory space
+
+ADDRESS         VALUE
+000000          6543210
+000004          5189784
+000008          1698791
+00000C          9816517
+000010          9816875
+000014          5498156
+
+    mov [ebx], eax
+
+*Moves the value in eax to the memory address contained in ebx.
+
+ | EAX : 0123456 |   --no-->   | EAX : 0123456 |
+ | EBX : 0000008 | --change--> | EBX : 0000008 |
+
+ADDRESS         VALUE           VALUE
+000000          6543210   ----> 6543210
+000004          5189784   ----> 5189784
+000008          1698791   ====> 0123456
+00000C          9816517   ----> 9816517
+000010          9816875   ----> 9816875
+000014          5498156   ----> 5498156
+
+    mov ebx, [eax]
+
+*Moves the value from the memory address contained in eax to ebx.
+
+ | EAX : 0000008 |   ---->   | EAX : 0000008 |
+ | EBX : 0123456 |   ====>   | EBX : 1698791 |
+
+ADDRESS         VALUE
+000000          6543210
+000004          5189784
+000008          1698791
+00000C          9816517
+000010          9816875
+000014          5498156
+
+----------------------------- LEA ----------------------------------------------
+--- Load effective address
+The lea instruction places the address specified by its second operand into the register specified by its first operand.
+Note, the contents of the memory location are not loaded, only the effective address is computed and placed into the register.
+This is useful for obtaining a pointer into a memory region.
+
+    - Syntax
+    lea <reg32>,<mem>
+
+    - Examples
+    lea edi, [ebx+4*esi] — the quantity EBX+4*ESI is placed in EDI.
+    lea eax, [var] — the value in var is placed in EAX.
+    lea eax, [val] — the value val is placed in EAX.
+
+----------------------------- ADD/SUB ------------------------------------------
+--- Integer Addition
+The add instruction adds together its two operands, storing the result in its first operand.
+Note, whereas both operands may be registers, at most one operand may be a memory location.
+
+    - Syntax
+    add <reg>,<reg>
+    add <reg>,<mem>
+    add <mem>,<reg>
+    add <reg>,<con>
+    add <mem>,<con>
+
+    - Examples
+    add eax, 10 — EAX ← EAX + 10
+    add BYTE PTR [var], 10 — add 10 to the single byte stored at memory address var
+
+--- Integer Subtraction
+The sub instruction stores in the value of its first operand the result of subtracting the value of its second operand from the value of its first operand.
+As with add
+
+    - Syntax
+    sub <reg>,<reg>
+    sub <reg>,<mem>
+    sub <mem>,<reg>
+    sub <reg>,<con>
+    sub <mem>,<con>
+
+    - Examples
+    sub al, ah — AL ← AL - AH
+    sub eax, 216 — subtract 216 from the value stored in EAX
+
+----------------------------- JMP/Jcc ------------------------------------------
+--- Jump
+Transfers program control flow to the instruction at the memory location indicated by the operand.
+
+    - Syntax
+    jmp <label>
+
+    - Example
+    jmp begin — Jump to the instruction labeled begin.
+
+--- Conditional Jump
+These instructions are conditional jumps that are based on the status of a set of condition codes that are stored in a special register called the machine status word.
+The contents of the machine status word include information about the last arithmetic operation performed.
+For example, one bit of this word indicates if the last result was zero. Another indicates if the last result was negative.
+Based on these condition codes, a number of conditional jumps can be performed.
+For example, the jz instruction performs a jump to the specified operand label if the result of the last arithmetic operation was zero.
+Otherwise, control proceeds to the next instruction in sequence.
+
+A number of the conditional branches are given names that are intuitively based on the last operation performed being a special compare instruction, cmp.
+For example, conditional branches such as jle and jne are based on first performing a cmp operation on the desired operands.
+
+    - Syntax
+    je <label> (jump when equal)
+    jne <label> (jump when not equal)
+    jz <label> (jump when last result was zero)
+    jg <label> (jump when greater than)
+    jge <label> (jump when greater than or equal to)
+    jl <label> (jump when less than)
+    jle <label> (jump when less than or equal to)
+
+    - Example
+    cmp eax, ebx
+    jle done
+    If the contents of EAX are less than or equal to the contents of EBX, jump to the label done. Otherwise, continue to the next instruction.
+
+----------------------------- CMP/TEST -----------------------------------------
+--- Compare
+Compare the values of the two specified operands, setting the condition codes in the machine status word appropriately.
+This instruction is equivalent to the sub instruction, except the result of the subtraction is discarded instead of replacing the first operand.
+
+    - Syntax
+    cmp <reg>,<reg>
+    cmp <reg>,<mem>
+    cmp <mem>,<reg>
+    cmp <reg>,<con>
+
+    - Example
+    cmp DWORD PTR [var], 10
+    jeq loop
+    If the 4 bytes stored at location var are equal to the 4-byte integer constant 10, jump to the location labeled loop.
+
+--- Test
+In the x86 assembly language, the TEST instruction performs a bitwise AND on two operands.
+The flags SF, ZF, PF are modified while the result of the AND is discarded.
+The OF and CF flags are set to 0, while AF flag is undefined.
+There are 9 different opcodes for the TEST instruction depending on the type and size of the operands.
+It can compare 8-bit, 16-bit, 32-bit or 64-bit values. It can also compare registers, immediate values and register indirect values.
+
+    - Example
+    ; Conditional Jump
+    test cl,cl        ; set ZF to 1 if cl == 0
+    je 0x804f430      ; jump if ZF == 1
+
+    ; Conditional Jump with NOT
+    test cl, cl       ; set ZF to 1 if cl == 0
+    jne 0x804f430     ; jump if ZF != 1
+
+    ; or
+    test eax, eax     ; set SF to 1 if eax < 0 (negative)
+    js error          ; jump if SF == 1
+
+----------------------------- AND/OR/XOR/NOT -----------------------------------
+---
+
+
+----------------------------- SHR/SHL/SAR/SAL ----------------------------------
+---
+
+
+----------------------------- IMUL/DIV -----------------------------------------
+---
+
+
+----------------------------- REP STOS, REP MOV --------------------------------
+---
+
+
+----------------------------- LEAVE --------------------------------------------
+---

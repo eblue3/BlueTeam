@@ -228,12 +228,106 @@ It can compare 8-bit, 16-bit, 32-bit or 64-bit values. It can also compare regis
     js error          ; jump if SF == 1
 
 ----------------------------- AND/OR/XOR/NOT -----------------------------------
----
+--- and, or, xor — Bitwise logical and, or and exclusive or
+These instructions perform the specified logical operation (logical bitwise and, or, and exclusive or, respectively) on their operands
+, placing the result in the first operand location.
 
+    - Syntax
+    and <reg>,<reg>
+    and <reg>,<mem>
+    and <mem>,<reg>
+    and <reg>,<con>
+    and <mem>,<con>
+
+    or <reg>,<reg>
+    or <reg>,<mem>
+    or <mem>,<reg>
+    or <reg>,<con>
+    or <mem>,<con>
+
+    xor <reg>,<reg>
+    xor <reg>,<mem>
+    xor <mem>,<reg>
+    xor <reg>,<con>
+    xor <mem>,<con>
+
+    - Examples
+    and eax, 0fH — clear all but the last 4 bits of EAX.
+    xor edx, edx — set the contents of EDX to zero.
+
+--- not — Bitwise Logical Not
+Logically negates the operand contents (that is, flips all bit values in the operand).
+
+    - Syntax
+    not <reg>
+    not <mem>
+
+    - Example
+    not BYTE PTR [var] — negate all bits in the byte at the memory location var.
 
 ----------------------------- SHR/SHL/SAR/SAL ----------------------------------
----
+--- Shift left format:
 
+    - Syntax
+    shl  destination, count
+    shl  destination, cl
+
+--- Shift right format:
+
+    - Syntax
+    shr  destination, count
+    shr  destination, cl
+
+where count is an immediate value.
+
+    - Notes
+    Bit shifted out goes into the carry flag CF.
+    Zero bit is shifted in at the other end:
+
+SHL:            |CF| <- |X| <- |X| <- |X| <- |X| <- |X| <- |X| <- |X| <- | | <- 0
+Bit Position:            7      6      5      4      3      2      1      0
+
+SHR:              0 -> | | -> |X| -> |X| -> |X| -> |X| -> |X| -> |X| -> |X| -> |CF|
+Bit Position:           7      6      5      4      3      2      1      0
+
+--- Semantics:
+Performs left/right bit-shift of destination by the value in count or CL register.
+CL register contents is not altered.
+
+    - Count is an immediate value:
+    shl    eax, 5
+
+Specification of count greater than 31 is not allowed.
+If greater, only the least significant 5 bits are actually used.
+CL version of shift is useful if shift count is known at run time,
+    e.g. when the shift count is a parameter in a procedure call.
+
+Only CL register can be used.
+    - Shift count value should be loaded into CL:
+    mov    cl, 5
+    shl    ax, cl
+
+--- Shift Arithmetic Left (Right):
+
+    - Syntax
+    shl destination, count
+
+    - Example
+    mov eax, 0xA  ; set EAX to 0xA (1010 in binary)
+    shl eax, 2    ; shifts 2 bits left in EAX, now equal to 0x28 (101000 in binary)
+
+mov eax, 0xA      0000 |1|0|1|0|    ; set EAX to 0xA (1010 in binary)
+                       / / / /
+shl eax, 2        00 |1|0|1|0| 00   ; shifts 2 bits left in EAX, now equal to 0x28 (101000 in binary)
+
+    shl eax, 1   ;Equivalent to EAX*(2^1) or EAX*2
+    shl eax, 2   ;Equivalent to EAX*(2^2) or EAX*4
+    shl eax, 3   ;Equivalent to EAX*(2^3) or EAX*8
+    shl eax, 4   ;Equivalent to EAX*(2^4) or EAX*16
+    shl eax, 5   ;Equivlaent to EAX*(2^5) or EAX*32
+    shl eax, 6   ;Equivalent to EAX*(2^6) or EAX*64
+    shl eax, 7   ;Equivalent to EAX*(2^7) or EAX*128
+    shl eax, 8   ;Equivalent to EAX*(2^8) or EAX*256
 
 ----------------------------- IMUL/DIV -----------------------------------------
 ---
@@ -244,4 +338,15 @@ It can compare 8-bit, 16-bit, 32-bit or 64-bit values. It can also compare regis
 
 
 ----------------------------- LEAVE --------------------------------------------
----
+--- LEAVE is the counterpart to ENTER.
+The ENTER instruction sets up a stack frame by first pushing EBP onto the stack and then copies ESP into EBP
+, so LEAVE has to do the opposite, i.e. copy EBP to ESP and then restore the old EBP from the stack.
+
+    - enter n,0 is exactly equivalent to (and should be replaced with)
+    push  ebp
+    mov   esp, ebp     ; ebp = esp,  mov  ebp,esp in Intel syntax
+    sub   n, esp       ; allocate space on the stack.  Omit if n=0
+
+    - leave is exactly equivalent to
+    mov   ebp, esp     ; esp = ebp,  mov  esp,ebp in Intel syntax
+    pop   ebp

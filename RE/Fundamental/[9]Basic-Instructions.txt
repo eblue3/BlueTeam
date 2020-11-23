@@ -52,11 +52,11 @@ While register-to-register moves are possible, direct memory-to-memory moves are
 In cases where memory transfers are desired, the source memory contents must first be loaded into a register, then can be stored to the destination memory address.
 
     - Syntax
-    mov <reg>,<reg>
-    mov <reg>,<mem>
-    mov <mem>,<reg>
-    mov <reg>,<const>
-    mov <mem>,<const>
+    mov <reg>, <reg>
+    mov <reg>, <mem>
+    mov <mem>, <reg>
+    mov <reg>, <const>
+    mov <mem>, <const>
 
     - Examples
     mov eax, ebx — copy the value in ebx into eax
@@ -118,7 +118,7 @@ Note, the contents of the memory location are not loaded, only the effective add
 This is useful for obtaining a pointer into a memory region.
 
     - Syntax
-    lea <reg32>,<mem>
+    lea <reg32>, <mem>
 
     - Examples
     lea edi, [ebx+4*esi] — the quantity EBX+4*ESI is placed in EDI.
@@ -131,11 +131,11 @@ The add instruction adds together its two operands, storing the result in its fi
 Note, whereas both operands may be registers, at most one operand may be a memory location.
 
     - Syntax
-    add <reg>,<reg>
-    add <reg>,<mem>
-    add <mem>,<reg>
-    add <reg>,<con>
-    add <mem>,<con>
+    add <reg>, <reg>
+    add <reg>, <mem>
+    add <mem>, <reg>
+    add <reg>, <con>
+    add <mem>, <con>
 
     - Examples
     add eax, 10 — EAX ← EAX + 10
@@ -146,11 +146,11 @@ The sub instruction stores in the value of its first operand the result of subtr
 As with add
 
     - Syntax
-    sub <reg>,<reg>
-    sub <reg>,<mem>
-    sub <mem>,<reg>
-    sub <reg>,<con>
-    sub <mem>,<con>
+    sub <reg>, <reg>
+    sub <reg>, <mem>
+    sub <mem>, <reg>
+    sub <reg>, <con>
+    sub <mem>, <con>
 
     - Examples
     sub al, ah — AL ← AL - AH
@@ -197,10 +197,10 @@ Compare the values of the two specified operands, setting the condition codes in
 This instruction is equivalent to the sub instruction, except the result of the subtraction is discarded instead of replacing the first operand.
 
     - Syntax
-    cmp <reg>,<reg>
-    cmp <reg>,<mem>
-    cmp <mem>,<reg>
-    cmp <reg>,<con>
+    cmp <reg>, <reg>
+    cmp <reg>, <mem>
+    cmp <mem>, <reg>
+    cmp <reg>, <con>
 
     - Example
     cmp DWORD PTR [var], 10
@@ -216,7 +216,7 @@ It can compare 8-bit, 16-bit, 32-bit or 64-bit values. It can also compare regis
 
     - Example
     ; Conditional Jump
-    test cl,cl        ; set ZF to 1 if cl == 0
+    test cl, cl        ; set ZF to 1 if cl == 0
     je 0x804f430      ; jump if ZF == 1
 
     ; Conditional Jump with NOT
@@ -233,23 +233,23 @@ These instructions perform the specified logical operation (logical bitwise and,
 , placing the result in the first operand location.
 
     - Syntax
-    and <reg>,<reg>
-    and <reg>,<mem>
-    and <mem>,<reg>
-    and <reg>,<con>
-    and <mem>,<con>
+    and <reg>, <reg>
+    and <reg>, <mem>
+    and <mem>, <reg>
+    and <reg>, <con>
+    and <mem>, <con>
 
-    or <reg>,<reg>
-    or <reg>,<mem>
-    or <mem>,<reg>
-    or <reg>,<con>
-    or <mem>,<con>
+    or <reg>, <reg>
+    or <reg>, <mem>
+    or <mem>, <reg>
+    or <reg>, <con>
+    or <mem>, <con>
 
-    xor <reg>,<reg>
-    xor <reg>,<mem>
-    xor <mem>,<reg>
-    xor <reg>,<con>
-    xor <mem>,<con>
+    xor <reg>, <reg>
+    xor <reg>, <mem>
+    xor <mem>, <reg>
+    xor <reg>, <con>
+    xor <mem>, <con>
 
     - Examples
     and eax, 0fH — clear all but the last 4 bits of EAX.
@@ -320,33 +320,87 @@ mov eax, 0xA      0000 |1|0|1|0|    ; set EAX to 0xA (1010 in binary)
                        / / / /
 shl eax, 2        00 |1|0|1|0| 00   ; shifts 2 bits left in EAX, now equal to 0x28 (101000 in binary)
 
-    shl eax, 1   ;Equivalent to EAX*(2^1) or EAX*2
-    shl eax, 2   ;Equivalent to EAX*(2^2) or EAX*4
-    shl eax, 3   ;Equivalent to EAX*(2^3) or EAX*8
-    shl eax, 4   ;Equivalent to EAX*(2^4) or EAX*16
-    shl eax, 5   ;Equivlaent to EAX*(2^5) or EAX*32
-    shl eax, 6   ;Equivalent to EAX*(2^6) or EAX*64
-    shl eax, 7   ;Equivalent to EAX*(2^7) or EAX*128
-    shl eax, 8   ;Equivalent to EAX*(2^8) or EAX*256
+    shl eax, 1   ; Equivalent to EAX*(2^1) or EAX*2
+    shl eax, 2   ; Equivalent to EAX*(2^2) or EAX*4
+    shl eax, 3   ; Equivalent to EAX*(2^3) or EAX*8
+    shl eax, 4   ; Equivalent to EAX*(2^4) or EAX*16
+    shl eax, 5   ; Equivalent to EAX*(2^5) or EAX*32
+    shl eax, 6   ; Equivalent to EAX*(2^6) or EAX*64
+    shl eax, 7   ; Equivalent to EAX*(2^7) or EAX*128
+    shl eax, 8   ; Equivalent to EAX*(2^8) or EAX*256
 
 ----------------------------- IMUL/DIV -----------------------------------------
----
+--- IMUL — Integer Multiplication
+The IMUL instruction has two basic formats: two-operand (first two syntax listings above) and three-operand (last two syntax listings above).
+The two-operand form multiplies its two operands together and stores the result in the first operand.
+The result (i.e. first) operand must be a register.
+The three operand form multiplies its second and third operands together and stores the result in its first operand.
+Again, the result operand must be a register.
+Furthermore, the third operand is restricted to being a constant value.
 
+    - Syntax
+    imul <reg32>, <reg32>
+    imul <reg32>, <mem>
+    imul <reg32>, <reg32>, <con>
+    imul <reg32>, <mem>, <con>
+
+    - Examples
+    imul eax, [var] — multiply the contents of EAX by the 32-bit contents of the memory location var. Store the result in EAX.
+    imul esi, edi, 25 — ESI → EDI * 25
+
+--- IDIV — Integer Division
+
+    The IDIV instruction divides the contents of the 64 bit integer EDX:EAX (constructed by viewing EDX as the most significant four bytes and EAX as the least significant four bytes) by the specified operand value. The quotient result of the division is stored into EAX, while the remainder is placed in EDX.
+
+    - Syntax
+    idiv <reg32>
+    idiv <mem>
+
+    - Examples
+    idiv ebx — divide the contents of EDX:EAX by the contents of EBX. Place the quotient in EAX and the remainder in EDX.
+    idiv DWORD PTR [var] — divide the contents of EDX:EAX by the 32-bit value stored at memory location var. Place the quotient in EAX and the remainder in EDX.
 
 ----------------------------- REP STOS, REP MOV --------------------------------
----
+REP = Repeat String Operation Prefix
+--- STOS: Store String
+The stos (Store String) instruction copies the value in AL, AX or EAX into the location pointed to by ES:DI or ES:EDI (depending on the address-size attribute of the instruction, 32 or 16, respectively). (E)DI is then incremented (if the direction flag is cleared) or decremented (if the direction flag is set), in preparation for storing AX in the next location.
+stosb stores a byte from the AL register into the destination operand.
+stosw stores a word from the AX register into the destination operand.
+stosd stores a doubleword from the EAX register into the destination operand.
 
+    - Syntax
+    stos
+    stosb
+    stosw
+    stosd
+
+    - Example
+When used in conjunction with the REP prefixes, the Store String instructions are useful for initializing a block of memory.
+For example, the following code would initialize the 100-byte memory block at BUFFER to 0:
+    mov     al, 0            ; The value to initialize BUFFER to
+    lea     di, BUFFER       ; Starting location of BUFFER
+    mov     cx, 100          ; Size of BUFFER
+    cld                     ; Let's move in forward direction
+    rep     stos BUFFER     ; Compare this line to example for STOSB
+
+--- MOVS: Move String
+    - Syntax
+    rep movs m8, m8 	       ; Move (E)CX bytes from DS:[(E)SI] to ES:[(E)DI].
+    rep movs m8, m8 	       ; Move RCX bytes from [RSI] to [RDI].
+    rep movs m16, m16 	     ; Move (E)CX words from DS:[(E)SI] to ES:[(E)DI].
+    rep movs m32, m32 	     ; Move (E)CX doublewords from DS:[(E)SI] to ES:[(E)DI].
+    rep movs m64, m64 	     ; Move RCX quadwords from [RSI] to [RDI].
 
 ----------------------------- LEAVE --------------------------------------------
 --- LEAVE is the counterpart to ENTER.
 The ENTER instruction sets up a stack frame by first pushing EBP onto the stack and then copies ESP into EBP
 , so LEAVE has to do the opposite, i.e. copy EBP to ESP and then restore the old EBP from the stack.
 
-    - enter n,0 is exactly equivalent to (and should be replaced with)
+    - enter n, 0 is exactly equivalent to (and should be replaced with)
     push  ebp
-    mov   esp, ebp     ; ebp = esp,  mov  ebp,esp in Intel syntax
+    mov   esp, ebp     ; ebp = esp,  mov  ebp, esp in Intel syntax
     sub   n, esp       ; allocate space on the stack.  Omit if n=0
 
     - leave is exactly equivalent to
-    mov   ebp, esp     ; esp = ebp,  mov  esp,ebp in Intel syntax
+    mov   ebp, esp     ; esp = ebp,  mov  esp, ebp in Intel syntax
     pop   ebp

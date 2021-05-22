@@ -1,7 +1,0 @@
-1, What are the infected file(s) downloaded and their hashes?
-=> Wireshark
-=> Export and check the length, data, ... (for some it's application/... or multipart/...)
-
-2, What is URL/Domain/IP of the infected website/server/machines/victim?
-3, What does the malware do?
-=> RE

@@ -1,0 +1,41 @@
+/*
+======================================================================================
+    Yoda's Protector v1.0b, 1.01 - OEP finder script for SHaG'a OllyScript plugin
+======================================================================================
+Author: haggar
+Usage: Script should find OEP on targets packed with yP 1.0b and 1.01 versions.
+Works only on XP systems. Be sure that you uncheck only "Memory access vioalations"
+and custom exceptions in Olly. Mail is dalmatinac_ipo@yahoo.com in case you have
+some info for me.
+*/
+
+msg "Ignore all exceptions except 'Memory access violations' and custom ones!    "
+
+var CBase
+var CSize
+var CrTool32Snap
+
+gmi eip,CODEBASE
+mov CBase,$RESULT
+gmi eip,CODESIZE
+mov CSize,$RESULT
+gpa "CreateToolhelp32Snapshot","kernel32.dll"
+mov CrTool32Snap,$RESULT
+add CrTool32Snap,1
+bp  CrTool32Snap
+
+dbh
+run
+bc eip
+asm eip,"pop ebp"
+sto
+asm eip,"xor eax,eax"
+sto
+asm eip,"retn 8"
+esto
+dbs
+bprm CBase,CSize
+esto
+bpmc
+cmt eip,"This is the OEP! Pres Ctrl+A to analyze."
+ret

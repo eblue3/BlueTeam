@@ -1,0 +1,15 @@
+var OpenMutexA
+
+gpa "OpenMutexA", "kernel32.dll"
+mov OpenMutexA, $RESULT
+bphws OpenMutexA, "x"
+esto
+rtu
+add eip, 2
+asm eip, "JNZ 00C96D10"
+esto 
+rtu
+add eip, 2
+asm eip, "JZ 00C9738C"
+bphwc OpenMutexA
+ret

@@ -1,0 +1,20 @@
+/*
+//////////////////////////////////////////////////////////////
+// Jdpack 1.xx OEP finder      
+// Author: 3BR4H!M_Cid -=|R3xXx4R|=-                                 
+// Email : ebrahim_cid@yahoo.com
+// OS : WinXP Pro, OllyDbg 1.10 Final, OllyScript v0.92 
+////////////////////////////////////////////////////////////////
+*/
+var stack
+start:
+sti
+mov stack,[esp]
+bphws stack,"r"
+run
+
+an eip
+cmt eip, "This is the OEP! Found by 3BR4H!M_Cid -= R3xXx4R=-"
+MSG "Found by  Cid!"
+MSG "Dumped and fix IAT now!"
+ret

@@ -1,0 +1,104 @@
+[Project]
+Assembler=masm
+Type=Win32 App
+Description=TLS Callback
+Backup=$P\Bak\
+Group=1
+GroupExpand=1
+[Files]
+1=TLS Callback.Asm
+2=TLS Callback.rc
+[MakeFiles]
+0=TLS Callback.rap
+1=TLS Callback.rc
+2=TLS Callback.asm
+3=TLS Callback.obj
+4=TLS Callback.res
+5=TLS Callback.exe
+6=TLS Callback.def
+7=TLS Callback.dll
+8=TLS Callback.txt
+9=TLS Callback.lib
+10=TLS Callback.mak
+11=TLS Callback.hla
+12=TLS Callback.com
+13=TLS Callback.ocx
+14=TLS Callback.idl
+15=TLS Callback.tlb
+16=TLS Callback.sys
+[MakeDef]
+Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
+1=4,O,$B\RC.EXE /v,1
+2=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
+3=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /LIBPATH:"$L" /OUT:"$5",3,4
+4=0,0,,5
+5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
+6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
+7=0,0,"$E\OllyDbg",5
+[Group]
+Group=Added files,Assembly,Resources,Misc,Modules
+1=2
+2=1
+[VersionControl]
+Settings=1246
+Milestones=129
+MilestoneEvery=10
+MilestoneEveryCurrent=0
+MilestoneOnBuild=0.0.0.0
+MilestoneOnTime=2
+MilestoneOnDate=0
+MilestoneOnDateWhen=1
+MilestoneOnDateStatus=0
+MilestoneOnDateDate=27
+MilestoneOnDateTimeYear=2012
+MilestoneOnDateTimeMonth=9
+MilestoneOnDateTimeDate=14
+MilestoneOnDateTimeHour=15
+MilestoneOnDateTimeMin=47
+MilestoneOnDateTimeSec=14
+MilestoneOnDateTimeStatus=0
+BackupLocation=C:\Users\Random\Documents\ASM Projects\VCBackups\
+CompressionLevel=0
+DefaultComment=Project $N, $Z, Backup Created On $D At $T.
+ExcludeExt1=\
+ExcludeExt2=\
+ExcludeExt3=\
+ExcludeExt4=\
+FileVerLength=4
+FileVer2Range=0
+FileVer3Range=0
+FileVer4Range=0
+ProductVerLength=4
+ProductVer2Range=0
+ProductVer3Range=0
+ProductVer4Range=0
+[Colref]
+0=00FFFFFF
+1=00FFFFFF
+2=00FFFFFF
+3=00FFFFFF
+4=00FFFFFF
+5=00FFFFFF
+6=00FFFFFF
+7=00FFFFFF
+[Collapse]
+1=
+2=
+[Size]
+1=0,0,0,0,1204
+2=0,0,0,0,0
+[BookMark]
+0=
+1=
+2=
+3=
+4=
+5=
+6=
+7=
+8=
+9=
+[BreakPoint]
+0=
+[Find]
+1="TlsCallBack"

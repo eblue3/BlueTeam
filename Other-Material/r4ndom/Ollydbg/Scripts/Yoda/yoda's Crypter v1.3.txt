@@ -1,0 +1,87 @@
+/*
+====================================================================
+    yoda's Crypter 1.3 - unpacking script for OllyScript plugin
+====================================================================
+*/
+
+
+msg "Script requires Windows XP. Ignore ALL exceptions!!!     "
+
+var CBase
+var CSize
+dbh
+
+gpa "GetProcAddress", "kernel32.dll" 
+bp $RESULT
+run
+bc eip
+rtu
+
+//Fix erased DLL/API names.
+find eip,#EB053EC60000403E80380075F5C3#
+cmp $RESULT,0
+je er
+add $RESULT,2
+fill $RESULT,4,90
+
+//Fix IAT redirection.
+find eip,#57568BCD81C1??????008D393E8B770489322BC683E805C606E98946013E834704055E5F#
+cmp $RESULT,0
+je er
+add $RESULT,10
+fill $RESULT,2,90
+
+
+//Fix PE header erasing.
+find $RESULT,#8BD581C2??????008B3A037F3C8B328B4F54C6060046E2FA#
+cmp $RESULT,0
+je er
+add $RESULT,12
+fill $RESULT,3,90
+add $RESULT,6
+bp $RESULT
+esto
+bc eip
+
+//Fixing CRC check:
+find $RESULT,#33C37408EB01CC61EB01CCC3#
+cmp $RESULT,0
+je er
+fill $RESULT,0C,90
+
+//Find RETN after decryption:
+findop $RESULT,#C3#
+cmp $RESULT,0
+je er
+bp $RESULT
+run
+bc eip
+
+//Find last pice of code before jumping to code section:
+find $RESULT,#558BEC57368B45103E8BB8C4000000#
+cmp $RESULT,0
+je er
+bp $RESULT
+run
+bc eip
+rtr
+
+//Breaking on OEP.
+gmi eip, CODEBASE
+mov CBase,$RESULT
+gmi eip, CODESIZE
+mov CSize,$RESULT
+bprm CBase,CSize
+esto
+bpmc
+an eip
+cmt eip,"This is the OEP."
+
+dbs
+ret
+
+er:
+msg "ERROR! Sorry, but there was some error while unpacking. Now exiting :( ."
+ret
+
+

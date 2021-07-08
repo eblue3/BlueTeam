@@ -1,0 +1,35 @@
+//PEncrypt 4.0 OEP finder by langxang
+
+var addr1                     
+var addr2                       
+var addr3                       
+findop eip,#60#                 
+bphws $RESULT, "r"               ?     
+run                              
+bphwc $RESULT                    
+sto                              
+sto                              
+sto                              
+mov addr1,esp                    
+bphws addr1,"r"                  
+run
+bphwc $RESULT
+sto
+sto
+sto
+sto
+mov addr2,esp                   
+bphws addr2,"r" 
+run
+BPHWC addr2
+sto
+sto
+sti
+sto
+mov addr3,esp                    
+bphws addr3,"r"                 
+run
+sto
+BPHWC addr3
+cmt eip, " OEP reached,enjoy it!"
+ret

@@ -1,0 +1,2 @@
+Copy help files into folder in olly.
+Select help->Select API Help Files in olly. Point to folder.

@@ -1,0 +1,9 @@
+[:Usage:]
+Copy mapconv.dll in OllyDBG directory and then
+1. You must create .map file using IDA or DeDe
+2. Run program from OllyDBG or atach to it
+3. Select what info to replace (comments or labels)
+4. Use plugin to select map file for this process
+5. Right-click on CPU window, and
+"Search for"/"User-defined comment" or "User-defined labels"
+to browse the imported info from map file

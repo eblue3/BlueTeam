@@ -1,0 +1,27 @@
+/*
+//////////////////////////////////////////////////////////////
+// UPX Mutanter 0.2 OEP finder      
+// Author: 3BR4H!M_Cid -=|R3xXx4R|=-                                 
+// Email : ebrahim_cid@yahoo.com
+// OS : WinXP Pro, OllyDbg 1.10 Final, OllyScript v0.92 
+////////////////////////////////////////////////////////////////
+*/
+start:
+BP 4095FD
+run
+sto
+an eip
+BC 4095FD
+BP 4095E1
+run 
+BC 4095E1
+sto
+an eip
+BP 40829F
+run 
+BC 40829F
+sto
+an eip
+cmt eip, " this is the OEP! Find BY 3BR4H!M_Cid "
+MSG  " Dmp it and N-JoY "
+ret

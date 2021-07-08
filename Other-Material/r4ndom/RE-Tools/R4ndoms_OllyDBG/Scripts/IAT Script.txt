@@ -1,0 +1,52 @@
+//Original idea by Tenketsu
+
+var MagJmp
+
+dbh
+eoe LABEL
+ask "Magic Jump address?"
+cmp $RESULT, 0
+je END
+mov MagJmp, $RESULT
+msgyn "Ask = YES  ||  Don't ask = NO"
+cmp $RESULT, 0
+je NoAsk
+eob BABEL
+jmp AskEnd
+
+NoAsk:
+eob BABEL2
+
+AskEnd:
+run
+
+BABEL:
+cmp eip, MagJmp
+jne END	
+cmp eax, 1
+jne SIGPAS
+msgyn "Continue?"
+cmp $RESULT, 1
+je SIGPAS
+jmp END
+
+SIGPAS:
+mov !ZF, 1
+run
+jmp SIGPAS
+
+BABEL2:
+cmp eip, MagJmp
+jne END
+mov !ZF, 1
+run
+jmp BABEL2
+
+END:
+ret
+
+LABEL:
+esto
+jmp LABEL
+
+//Script translated by PakMan

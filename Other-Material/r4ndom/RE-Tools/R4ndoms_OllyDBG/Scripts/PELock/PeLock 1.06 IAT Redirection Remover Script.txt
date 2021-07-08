@@ -1,0 +1,51 @@
+/*
+
+; //////////////////////////////////////////////////////////////
+;
+; PeLock 1.06 IAT redirection remover script
+;
+; Script by: ap0x
+; WebSite:   http://ap0x.jezgra.net
+; When?  :   8/9/2006 8:06:53 PM
+;
+; Settings: 
+;            -pass all exceptions to debugger (check all)-
+; -------------------------------------------------------------
+;
+;
+;     Visit Reversing Labs at http://ap0x.jezgra.net
+;
+; //////////////////////////////////////////////////////////////
+
+*/
+
+ var tmp
+
+ MSG "If you get any error pass an exception with SHIFT+F9!"
+
+ gpa "LoadLibraryA", "kernel32.dll"
+ find $RESULT,#C20400#
+ bp $RESULT
+ run
+ run
+ bc $RESULT
+ sto
+ find eip,#8919EB03#
+ bphws $RESULT,"x"
+ run
+
+ MSG "Now set memory breakpoint on access to main .code section. Then press OK!"
+
+ mov tmp,eip
+
+patch:
+ cmp eip,tmp
+ jne exit
+ asm eip, "MOV DWORD PTR DS:[ECX],EAX"
+ sto
+ asm tmp, "MOV DWORD PTR DS:[ECX],EBX"
+ run
+ jmp patch
+
+exit:
+ ret

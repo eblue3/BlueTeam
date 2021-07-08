@@ -1,0 +1,338 @@
+
+.486
+.model flat,stdcall
+option casemap:none
+
+include windows.inc
+include user32.inc
+include kernel32.inc
+
+includelib user32.lib
+includelib kernel32.lib
+includelib windows.lib
+
+DlgProc PROTO :DWORD,:DWORD,:DWORD,:DWORD
+
+.data
+GoodboyText		db	"You beat me.",0
+GoodboyCaption	db	"Congratulations", 0
+DlgName 		db  "MyDialog",0
+DebuggerText	db	"Please do not run me in a debugger.",0
+DebugCaption	db	"Debugger found!",0
+BadboyText 		db  "That is incorrect",0
+
+.data?
+hInstance	 HINSTANCE ?
+CommandLine  LPSTR ?
+globalHandle HWND ?
+buffer		 db 10 dup(?)
+BadboyFlag 	 dd ?
+
+.const
+IDC_EDIT        equ 3000
+IDC_BUTTON      equ 3001
+
+.code
+start:
+	
+	; set up main dialog window
+	
+	invoke GetModuleHandle, NULL
+	mov    hInstance,eax
+	invoke DialogBoxParam, hInstance, ADDR DlgName,NULL,addr DlgProc,NULL
+	invoke ExitProcess,eax
+	
+	
+DlgProc proc hWnd:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
+
+	;### INITDIALOG ###
+	
+	.IF uMsg==WM_INITDIALOG
+		invoke GetDlgItem, hWnd, IDC_EDIT	; Set focus to edit box
+		invoke SetFocus, eax
+		call CheckDebug						; check isDebuggerPresent
+		
+	;### CLOSE ###
+	
+	.ELSEIF uMsg==WM_CLOSE		
+		invoke EndDialog, hWnd,NULL			; Close the dialog
+		
+	;### COMMAND ###
+	
+	.ELSEIF uMsg==WM_COMMAND
+		mov eax,wParam
+		mov edx,wParam
+		shr edx,16
+		.IF dx==BN_CLICKED
+			
+			;### BUTTON - Check ###
+				
+			.IF ax==IDC_BUTTON
+				mov eax, hWnd				; Save handle in global
+				mov globalHandle, eax
+				xor eax, eax				; Start with BadboyFlag equal to 0
+				mov BadboyFlag, eax
+				call CheckTiming			; rdtsc + get entered serial
+				call Opaque					; Opaque predicate - does nothing
+				call SpaghettiCode			; Spaghetti Code + compare serials + self-modifying
+			.ENDIF
+		.ENDIF
+	.ELSE
+		mov eax,FALSE
+		ret
+	.ENDIF
+	mov eax,TRUE
+	ret
+DlgProc endp
+
+CheckDebug proc		
+
+	;#### Is Debugger Present ####
+	
+	call IsDebuggerPresent				; Check if debugging
+	test al, al							; AL is 0 if not being debugged
+	jne DebugCheckFail					; We are being debugged, so bug out
+	ret
+	
+DebugCheckFail:
+	call is_being_debugged				; Show debugger message
+	
+CheckDebug endp
+
+CheckTiming proc
+	
+	;#### Timing Check ####
+
+	db 0fh, 31h							; rdtsc
+	push eax							; save tick count
+	xor eax, eax
+	db 0fh, 31h							; rdtsc
+	sub eax, [esp]						; find time delta
+	cmp eax, 2000h						; Is time > 2000?
+	ja TimingFailed						;   yes, so we are being debugged
+	invoke GetDlgItemText, globalHandle, IDC_EDIT, ADDR buffer, 10
+	pop eax								; Clean up stack
+	ret
+
+TimingFailed:
+	call is_being_debugged				; Show debugger message
+	
+CheckTiming endp
+
+Opaque proc
+	
+	;#### Opaque Predicate ####
+	
+	mov eax, 2							; Junk code
+	cmp eax, 3							;   "
+	je junk1							; Force Olly to consider this a jump
+	jne PredicateOK						; This will always jump here
+
+junk1:									; Make Olly think this is code
+decoy 		db "AXtHG79kM-=!sS"
+
+PredicateOK:
+	mov eax, 3							; Real execution goes here
+	ret
+	
+Opaque endp
+
+SpaghettiCode proc
+
+	;#### Spaghetti Code ####
+	
+	call Spaghetti						; Push this address on to the stack
+	
+Return:
+	jmp Continue						; Done with cpaghetti code
+	
+Spaghetti:
+	pop edx								; Store return value in edx
+	mov edi, 3							; index into call order (in array of addresses below)
+	
+Loop1:									; Get address to execute
+	mov ebx, dword ptr [edi*4+address_array]
+	call ebx							; Execute part of function
+	dec edi								; Do it three times
+	jnz Loop1
+	jmp Return
+	ret
+	
+code3:
+	mov ecx, 3							; Junk code 1
+	cmp ecx, eax						;   "
+	je junk2							;   "
+
+	; ### Compare first two digits of serials ###
+	
+	mov eax, dword ptr buffer			; Get first character of entered serial				
+	mov ebx, dword ptr DebuggerText+4	; Get the "c" in DebuggerText text
+	cmp	al, bl							; Are they the same?
+	je Compare3							; yes, so keep going
+	call ShowBadboy
+	ret
+
+Compare1:
+	mov eax, dword ptr buffer+1			; Get first character of entered serial
+	cmp	al, bl							; Are they the same?
+	je Compare2							; yes, so keep going
+	call ShowBadboy
+	
+Compare2:
+	ret
+
+;#### Goodboy Mesage Box Code #####	
+Goodboy:								; Real code in middle of junk
+
+db 4eh, 21h, 30h, 4ch, 14h, 61h, 58h, 29h, 24h, 11h, 18h, 41h, 4eh, 21h, 
+   0b0h, 0ch, 25h, 21h, 58h, 2bh, 24h, 0c9h, 00h, 40h, 24h, 21h, 0c8h, 0d1h
+   
+;	invoke MessageBoxA, NULL, addr GoodboyText, addr GoodboyCaption, MB_OK
+;	invoke ExitProcess,0
+;	nop
+;	nop
+
+;##################################
+	
+code2:									; Junk code
+	mov ecx, 5							;    "
+	cmp ecx, eax						;    "
+	je junk2							;    "
+
+	; ### Compare third and fourth digits of serials ###
+	
+	mov eax, dword ptr buffer+2			; Get third character of entered serial				
+	mov ebx, dword ptr GoodboyText+5		; Get the "e" in GoodboyText
+	cmp	al, bl							; Are they the same?
+	je Compare3							; yes, so keep going
+	call ShowBadboy
+	ret
+
+Compare3:
+	mov eax, dword ptr buffer+3			; Get first character of entered serial	
+	mov ebx, dword ptr BadboyText+10	; Get the "c" in Badboy text
+	cmp	al, bl							; Are they the same?
+	je Compare4							; yes, so keep going
+	call ShowBadboy
+	
+Compare4:
+	ret
+	
+code1:									; Junk code 
+	mov ecx, 0							;     "
+	cmp ecx, eax						;     "
+	je junk2							;     "
+	
+	; ### Compare fifth and last digits of serials ###
+	
+	mov eax, dword ptr buffer+4			; Get third character of entered serial				
+	mov ebx, dword ptr BadboyText+6		; Get the "s" in BadboyText
+	cmp	al, bl							; Are they the same?
+	je Compare5							; yes, so keep going
+	call ShowBadboy
+	ret
+
+Compare5:
+	mov eax, dword ptr buffer+5			; Get first character of entered serial	
+	mov ebx, dword ptr DebugCaption+14	; Get the "!" in DebugCaption
+	cmp	al, bl							; Are they the same?
+	je Compare6							; yes, so keep going
+	call ShowBadboy
+	
+Compare6:
+	ret
+	
+junk2:
+	invoke ExitProcess,0				; This will never be reached
+	
+address_array dd 0, code3, code2, code1
+	
+	
+Continue:
+
+	call BreakpointCheck				; Check code for breakpoints
+	
+	;#### Check badboy flag ####
+	
+	mov eax, offset BadboyFlag			; If flag is non-zero, then it's set
+	mov eax, [eax]
+	cmp eax, 0
+	je BeginShowGoodboy
+	ret
+	
+	;#### Self-Modifying Code ####
+	
+BeginShowGoodboy:
+	mov edi, Goodboy
+	mov ecx, 7							; Length of goodboy code
+	mov eax, "AX!$"						; XOR value
+	
+Loop2:
+	xor [edi], eax						; XOR it!
+	add edi, 4							; Go to next byte
+	dec ecx								; counter --
+	jne Loop2
+	
+	;#### Return Obfuscation ####
+	
+	push (Goodboy + 754841h)			; Push return value + constant
+	mov eax, [esp]
+	sub eax, 754841h					;  and subtract back the constant
+	mov [esp], eax
+	ret
+
+SpaghettiCode endp
+
+is_being_debugged proc
+
+	;#### Show "Do not run in debugger" ####
+	
+	invoke MessageBoxA, NULL, addr DebuggerText, addr DebugCaption, MB_OK
+	invoke ExitProcess,0
+
+is_being_debugged endp
+
+ShowBadboy proc
+	mov eax, 1							; flag set, as long as not zero						
+	mov ecx, 5							; Counter for junk code
+
+ShowBadboyLoop:
+	add eax, 5555555					; Junk code
+	xor eax, 1234567					;   "
+	and eax, 7654321					;   "
+	shr eax, 2							;   "
+	cmp ax, 0							;   "
+	je Decoy2							;   "
+	dec ecx								;   "
+	jne ShowBadboyLoop					;   "
+	
+	mov BadboyFlag, eax					; Set badboy flag
+	invoke SetDlgItemText, globalHandle, IDC_EDIT, ADDR BadboyText
+	
+Decoy2:									; a decoy- will never be called
+	ret
+
+ShowBadboy endp
+	
+	BreakpointCheck proc
+
+	;#### BP Checking ####
+	
+	mov eax, start						; Start of code to check
+	mov ecx, ProgramEnd					; End of code to check
+	sub ecx, start						; ECX = length of all code
+	
+ProgramEnd:
+	nop									; Marker for end of code to check
+										;   for 0xCC bytes
+Loop3:
+	cmp byte ptr [eax], 0CCh			; 0xCC = interrupt
+	jz is_being_debugged				; Found a BP
+	inc eax								; Go to next byte in code
+	dec ecx								; Counter--
+	jnz Loop3
+	ret
+
+BreakpointCheck endp
+
+end start

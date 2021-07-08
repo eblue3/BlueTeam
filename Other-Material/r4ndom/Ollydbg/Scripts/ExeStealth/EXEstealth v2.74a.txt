@@ -1,0 +1,65 @@
+/*
+
+Script for unpacking EXEstealth v2.74a (by haggar)
+
+-Script works only on XP systems.
+-Script finds OEP, prevents IAT redirection,PE header and API names erasing.
+-You need to dump file with OllyDump plugin. If plugin cannot rebuild IAT properly, use ImpREC.
+
+*/
+
+
+
+msg "Script works only on XP systems. Ignore ALL exceptions!!   "   //Message at the begining.
+
+var Code_Base              //Some variables.
+var Code_Size
+
+dbh                        //Hide debugger.
+
+gpa "GetProcAddress", "kernel32.dll"      //This gets address of this API to $RESULT.
+bp $RESULT                                //Placing breakpoint to GetProcAddress.
+run                                       //Runs target.
+bc eip                                    //Clear bp from kernel.
+rtu                                       //Return to our target code.
+
+find eip,#8B9D??????0033C37408EB01#       //Find code around CRC jump.
+add $RESULT,7
+fill $RESULT,1,C0                         //Patch XOR EAX,EBX to XOR EAX,EAX.
+
+find eip,#EB04C600004080380075F7C3#       //Find erase DLL/API procedure.
+add $RESULT,2
+fill $RESULT,3,90                         //Patch it to not erase.
+
+find eip,#57568DBD??????008B770489322BC683E805C606E9894601834704055E5F# //Find redirect API.
+add $RESULT,0B
+fill $RESULT,2,90
+
+find eip,#8BBD??????00037F??8B4F??8BB5??????00C6060046E2FA#  //Erasing PE header..
+add $RESULT,12
+fill $RESULT,3,90                                            //Patching it.
+
+add $RESULT,6
+bp $RESULT
+run
+bc eip
+
+gmi eip, CODEBASE                    //Placing mem bp on code section.
+mov Code_Base,$RESULT
+
+gmi eip, CODESIZE
+mov Code_Size,$RESULT
+
+bprm Code_Base,Code_Size
+esto
+bpmc
+
+an eip
+cmt eip,"This should be the OEP!"
+msg "OEP found! Dump with OllyDump plugin, but rebuild IAT with ImpREC.  "
+
+dbs      //Unhides debugger.
+ret      //End of script.
+
+
+
